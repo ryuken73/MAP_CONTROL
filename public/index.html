@@ -2,6 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <link rel="stylesheet" href="video-js.css" />
+    <link rel="stylesheet" href="videojs-overlay.css" />
+    <script src="video.js"></script>
+    <script src='videojs-overlay.js'></script>
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
@@ -9,6 +13,7 @@
       name="description"
       content="Web site created using create-react-app"
     />
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2b2662e2d65df44a91821fa7c4f43aec"></script>
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -29,6 +34,8 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- <div id='players' style="display:none"></div> -->
+    <div id='players'></div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
