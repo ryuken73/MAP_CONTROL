@@ -16,16 +16,14 @@ const HLSPlayer = (props) => {
     console.log('###### source in HLSPlayer:', startSecondsOffset)
 
     const {
-        channelNumber=1,
-        channelName='preview',
+        width=600,
+        height=340,
         controls=false, 
         autoplay=true, 
         bigPlayButton=false, 
         bigPlayButtonCentered=false, 
         source={},
         type='application/x-mpegURL',
-        reMountPlayer=false,
-        restorePlaybackRate=true,
         LONG_BUFFERING_MS_SECONDS=3000
     } = props;
     const {activeSource} = props;
@@ -42,10 +40,6 @@ const HLSPlayer = (props) => {
     //     setRecorderStopTimeSeconds,
     //     setClipLengthSeconds
     // } = props.HLSRecordersActions;
-
-    // todo: move below in config file
-    const width=600;
-    const height=340; 
 
     // const {
     //     setPlayer=()=>{},

@@ -4,53 +4,6 @@ import Controls from './Controls.json';
 import videojs from 'video.js';
 import overlay from 'videojs-overlay';
 
-const timeFormatWithOffset = offsetSeconds => {
-    return (seconds, guide) => {
-        seconds = seconds < 0 ? 0 + offsetSeconds : seconds + offsetSeconds;
-        let s = Math.floor(seconds % 60);
-        let m = Math.floor(seconds / 60 % 60);
-        let h = Math.floor(seconds / 3600);
-        const gm = Math.floor(guide / 60 % 60);
-        const gh = Math.floor(guide / 3600);
-      
-        // handle invalid times
-        if (isNaN(seconds) || seconds === Infinity) {
-          // '-' is false for all relational operators (e.g. <, >=) so this setting
-          // will add the minimum number of fields specified by the guide
-          h = m = s = '-';
-        }
-      
-        // Check if we need to show hours
-        h = (h > 0 || gh > 0) ? h + ':' : '';
-      
-        // If hours are showing, we may need to add a leading zero.
-        // Always show at least one digit of minutes.
-        m = (((h || gm >= 10) && m < 10) ? '0' + m : m) + ':';
-      
-        // Check if leading zero is need for seconds
-        s = (s < 10) ? '0' + s : s;
-      
-        return h + m + s;
-      };
-} 
-
-const mkSeekBtn = (player, direction) => {
-    const element = document.createElement('button');
-    element.style = "cursor:pointer";
-    element.innerText = direction === 'back' ? "back(5s)" : "forward(5s)"
-    const offset = direction === 'back' ? -5 : +5;
-    element.onclick = () => {
-        player.currentTime(player.currentTime() + offset);
-    }
-    element.onmousedown = () => {
-        element.style = "color: black"
-    }
-    element.onmouseup = () => {
-        element.style = "color: white"
-    }
-    return element;
-}
-
 class VideoPlayer extends Component {
     playerId = `video-player-${Date.now() + (Math.random()*10000).toFixed(0)}`
     player = {};
@@ -81,12 +34,7 @@ class VideoPlayer extends Component {
                 overlayLeftBtn="Left Button",
                 startSecondsOffset=0
             } = props;
-            const customTimeFormatFunc = timeFormatWithOffset(startSecondsOffset);
-            videojs.setFormatTime(customTimeFormatFunc)
             this.player = videojs(document.querySelector(`#${this.playerId}`), playerOptions);
-            const goBackBtn = mkSeekBtn(this.player, 'back');
-            const goForwardBtn = mkSeekBtn(this.player, 'forward');
-            // videojs.log.level('debug')
             if(enableOverlay){
                 this.player.overlay(
                     {
@@ -112,34 +60,10 @@ class VideoPlayer extends Component {
                                 align:'left',
                                 showBackground:false
                             },
-                            {
-                                content: goBackBtn,
-                                start:'loadstart',
-                                end:'dispose',
-                                align:'bottom-left',
-                                showBackground:false
-                            },
-                            {
-                                content: goForwardBtn,
-                                start:'loadstart',
-                                end:'dispose',
-                                align:'bottom-right',
-                                showBackground:false
-                            }
                     ]
                     }
                 )
             }
-            // setInterval(() => {
-            //     this.player.markers({
-            //         markers: [
-            //            {time: 9.5, text: "this"},
-            //            {time: 16,  text: "is"},
-            //            {time: 23.6,text: "so"},
-            //            {time: 28,  text: "cool"}
-            //         ]
-            //       });
-            // },5000)
 
             this.player.src(props.src)
             this.player.poster(props.poster)
