@@ -90,7 +90,7 @@ function App() {
             setPlayer={setPlayer}
           ></HLSPlayer>
         </div>
-        <Box width="80%" height="500px">
+        <Box width="99%" height="100%">
           <KakaoMap
             setMap={setMap}
             setLocation={setLocation}
