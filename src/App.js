@@ -7,8 +7,9 @@ import OverlayContent from './OverlayContent';
 import HLSPlayer from './HLSPlayer';
 import ModalBox from './ModalBox';
 import cctvs from './sources';
+import Tooltip from '@material-ui/core/Tooltip';
 
-const SHOW_ON_MAP = false;
+const SHOW_ON_MAP = true;
 
 function App() {
   const [map, setMap] = React.useState(null);
@@ -18,9 +19,11 @@ function App() {
   const [player, setPlayer] = React.useState(null);
   const [playerDisplay, setPlayerDisplay] = React.useState('none');
   const [playerSource, setPlayerSource] = React.useState({});
+  const [currentId, setCurrentId] = React.useState(null);
+
   console.log('re-render:', location)
   const playerRef = React.useRef(null);
-
+  const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   React.useEffect(() => {
     // cctvs.forEach(cctv => {
@@ -47,24 +50,30 @@ function App() {
     // })
   },[])
 
-  const gotoLocation = cctvId => {
-    return event => {
-      setPlayerDisplay('none');
-      const cctv = cctvs.find(cctv => cctv.cctvId === cctvId);
-      const moveLatLng = new window.kakao.maps.LatLng(cctv.lat, cctv.lng);
-      map.panTo(moveLatLng);
-      if(SHOW_ON_MAP){
-        const customOverlay = new window.kakao.maps.CustomOverlay({
-          position: moveLatLng,
-          // content: players.get(cctv.cctvId)
-          content: playerRef.current 
-        })
-        customOverlay.setMap(map)
-        setTimeout(() => {
-          setPlayerDisplay('block');
-        }, 1000)
-      }
-
+  const gotoLocation = event => {
+    const cctvId = event.target.id || event.target.parentElement.id;
+    const cctvIdNum = parseInt(cctvId);
+    setCurrentId(cctvIdNum);
+    setPlayerDisplay('none');
+    const cctv = cctvs.find(cctv => cctv.cctvId === cctvIdNum);
+    const moveLatLng = new window.kakao.maps.LatLng(cctv.lat, cctv.lng);
+    map.panTo(moveLatLng);
+    const marker = new window.kakao.maps.Marker({position: moveLatLng});
+    marker.setMap(map)
+    if(SHOW_ON_MAP){
+      setPlayerSource({url:'http://localhost'})
+      const customOverlay = new window.kakao.maps.CustomOverlay({
+        position: moveLatLng,
+        // content: players.get(cctv.cctvId)
+        content: playerRef.current,
+        xAnchor: 0.5,
+        yAnchor: 0
+      })
+      customOverlay.setMap(map)
+      setTimeout(() => {
+        console.log('change display to block')
+        setPlayerDisplay('block');
+      }, 1000)
     }
   }
 
@@ -83,9 +92,13 @@ function App() {
           </Box>
         </Box>
         <div ref={playerRef} style={{display: playerDisplay}}>
+          <Box color="black" fontSize="18px" bgcolor="white">
+            {currentTitle}
+          </Box>
           <HLSPlayer 
             width={350}
             height={250}
+            fluid={false}
             source={playerSource}
             setPlayer={setPlayer}
           ></HLSPlayer>
@@ -100,19 +113,20 @@ function App() {
         <Box display="flex" flexDirection="row" fontSize="15px" flexWrap="wrap">
           {cctvs.map(cctv => (
             <Box ml="10px" mt="10px">
-              <Button id={cctv.cctvId} variant="contained" color="primary" onClick={gotoLocation(cctv.cctvId)}>
+              <Button key={cctv.cctvId} id={cctv.cctvId} variant="contained" color="primary" onClick={gotoLocation}>
                 {cctv.title} 
               </Button>
             </Box>
 
           ))}
         </Box>
-          <ModalBox>
+          <ModalBox contentWidth="80%">
               <HLSPlayer 
-                  width="90%"
-                    source={playerSource}
-                    setPlayer={setPlayer}
-                ></HLSPlayer>
+                fluid={true}
+                responsive={true}
+                source={playerSource}
+                setPlayer={setPlayer}
+              ></HLSPlayer>
           </ModalBox>
       </header>
       {/* <HLSPlayer 

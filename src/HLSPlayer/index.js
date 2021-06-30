@@ -11,7 +11,10 @@ const HLSPlayer = (props) => {
         overlayContent='Default Overlay Content',
         overlayRightBtn='Default Right Button',
         overlayLeftBtn='Default left Button',
-        startSecondsOffset=0
+        startSecondsOffset=0,
+        fluid=false,
+        responsive=false,
+        aspectRatio='2:1'
     } = props;
     console.log('###### source in HLSPlayer:', startSecondsOffset)
 
@@ -180,6 +183,9 @@ const HLSPlayer = (props) => {
                 startSecondsOffset={startSecondsOffset}
                 inactivityTimeout={0}
                 hideControls={['volume', 'timer']}
+                fluid={fluid}
+                responsive={responsive}
+                aspectRatio={aspectRatio}
             />
         </Box>
     );

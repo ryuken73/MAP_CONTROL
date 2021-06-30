@@ -15,7 +15,6 @@ class VideoPlayer extends Component {
     componentWillReceiveProps(nextProps){
         this.set_controls_visibility(this.player, nextProps.hideControls);
         if(this.props.src !== nextProps.src){
-            // if (this.player) this.player.dispose();
             this.init_player(nextProps);
         }
     }
@@ -26,51 +25,48 @@ class VideoPlayer extends Component {
 
     init_player(props) {
         try {
+            console.log('####',props)
             const playerOptions = this.generate_player_options(props);
             const {
                 enableOverlay=false, 
                 overlayContent="This is HLS Player!",
                 overlayRightBtn="Right Button",
                 overlayLeftBtn="Left Button",
-                startSecondsOffset=0
+                startSecondsOffset=0,
             } = props;
             this.player = videojs(document.querySelector(`#${this.playerId}`), playerOptions);
-            if(enableOverlay){
-                this.player.overlay(
-                    {
-                        overlays:[
-                            {
-                                content: overlayContent,
-                                start:'playing',
-                                end:'dispose',
-                                showBackground:true,
-                                class:'title-overlay'
-                            },
-                            {
-                                content: overlayRightBtn,
-                                start:'loadstart',
-                                end:'dispose',
-                                align:'right',
-                                showBackground:false
-                            },
-                            {
-                                content: overlayLeftBtn,
-                                start:'loadstart',
-                                end:'dispose',
-                                align:'left',
-                                showBackground:false
-                            },
-                    ]
-                    }
-                )
-            }
+            // if(enableOverlay){
+            //     this.player.overlay(
+            //         {
+            //             overlays:[
+            //                 {
+            //                     content: overlayContent,
+            //                     start:'playing',
+            //                     end:'dispose',
+            //                     showBackground:true,
+            //                     class:'title-overlay'
+            //                 },
+            //                 {
+            //                     content: overlayRightBtn,
+            //                     start:'loadstart',
+            //                     end:'dispose',
+            //                     align:'right',
+            //                     showBackground:false
+            //                 },
+            //                 {
+            //                     content: overlayLeftBtn,
+            //                     start:'loadstart',
+            //                     end:'dispose',
+            //                     align:'left',
+            //                     showBackground:false
+            //                 },
+            //         ]
+            //         }
+            //     )
+            // }
 
             this.player.src(props.src)
             this.player.poster(props.poster)
-            this.player.fluid(true)
-            // this.player.fill(true)
-            this.player.responsive(true)
-            this.player.aspectRatio('2:1')
             this.set_controls_visibility(this.player, props.hideControls);
 
         } catch(error) {
@@ -89,6 +85,14 @@ class VideoPlayer extends Component {
         playerOptions.height = props.height;
         playerOptions.bigPlayButton = props.bigPlayButton;
         playerOptions.liveui = props.liveui;
+        playerOptions.errorDisplay = false;
+        if(props.fluid) playerOptions.fluid = true;
+        if(props.responsive) playerOptions.responsive = true;
+        if(props.aspectRatio) playerOptions.responsive = props.aspectRatio;
+
+        // playerOptions.fluid = props.fluid;
+        // playerOptions.responsive = props.responsive;
+        // playerOptions.aspectRatio = props.aspectRatio;
         playerOptions.controlBar = {
             'pictureInPictureToggle': false
         };

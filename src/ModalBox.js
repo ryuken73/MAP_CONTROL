@@ -4,18 +4,18 @@ import Box from '@material-ui/core/Box'
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  paper: {
+  paper: props => ({
     margin: 'auto',
-    width: "90%",
+    width: props.contentWidth || "90%",
     backgroundColor: theme.palette.background.paper,
     border: '2px solid #000',
     boxShadow: theme.shadows[5],
     padding: theme.spacing(1),
-  },
+  }),
 }));
 
 export default function SimpleModal(props) {
-  const classes = useStyles();
+  const classes = useStyles(props);
   const {children} = props;
   // getModalStyle is not a pure function, we roll the style only on the first render
   const [open, setOpen] = React.useState(false);
@@ -40,9 +40,8 @@ export default function SimpleModal(props) {
         aria-describedby="simple-modal-description"
       >
         <Box display="flex" height="100%">
-          <Box  className={classes.paper}>
-          {children}
-
+          <Box className={classes.paper}>
+            {children}
           </Box>
         </Box>
       </Modal>
