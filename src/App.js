@@ -8,6 +8,7 @@ import HLSPlayer from './HLSPlayer';
 import ModalBox from './ModalBox';
 import cctvs from './sources';
 import Tooltip from '@material-ui/core/Tooltip';
+import axios from 'axios';
 
 const SHOW_ON_MAP = true;
 
@@ -26,6 +27,8 @@ function App() {
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   React.useEffect(() => {
+    // axios.get('http://localhost:',{})
+
     // cctvs.forEach(cctv => {
     //   const divElement = document.createElement('video');
     //   divElement.id = cctv.cctvId;
@@ -56,10 +59,14 @@ function App() {
     setCurrentId(cctvIdNum);
     setPlayerDisplay('none');
     const cctv = cctvs.find(cctv => cctv.cctvId === cctvIdNum);
+
     const moveLatLng = new window.kakao.maps.LatLng(cctv.lat, cctv.lng);
+    const mapLevel = cctv.mapLevel || 11;
+    map.setLevel(mapLevel, {anchor: moveLatLng})
     map.panTo(moveLatLng);
     const marker = new window.kakao.maps.Marker({position: moveLatLng});
     marker.setMap(map)
+
     if(SHOW_ON_MAP){
       setPlayerSource({url:'http://localhost'})
       const customOverlay = new window.kakao.maps.CustomOverlay({
