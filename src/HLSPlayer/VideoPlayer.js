@@ -67,6 +67,10 @@ class VideoPlayer extends Component {
 
             this.player.src(props.src)
             this.player.poster(props.poster)
+            this.player.fluid(true)
+            // this.player.fill(true)
+            this.player.responsive(true)
+            this.player.aspectRatio('2:1')
             this.set_controls_visibility(this.player, props.hideControls);
 
         } catch(error) {

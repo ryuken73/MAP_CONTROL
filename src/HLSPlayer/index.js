@@ -16,8 +16,8 @@ const HLSPlayer = (props) => {
     console.log('###### source in HLSPlayer:', startSecondsOffset)
 
     const {
-        width=600,
-        height=340,
+        width="100%",
+        height=0,
         controls=false, 
         autoplay=true, 
         bigPlayButton=false, 
@@ -28,23 +28,6 @@ const HLSPlayer = (props) => {
     } = props;
     const {activeSource} = props;
     const {setPlayer} = props;
-    // const {
-    //     setPlayer,
-    //     refreshPlayer,
-    //     setPlayerSeeked,
-    //     setStartNStopPoint
-    // } = props.HLSPlayersActions;
-
-    // const {
-    //     setRecorderStartTimeSeconds,
-    //     setRecorderStopTimeSeconds,
-    //     setClipLengthSeconds
-    // } = props.HLSRecordersActions;
-
-    // const {
-    //     setPlayer=()=>{},
-    //     refreshPlayer=()=>{}
-    // } = props;
 
     const srcObject = {
         src: source.url,
@@ -56,12 +39,6 @@ const HLSPlayer = (props) => {
 
     React.useEffect(() => {
         console.log('playbackRate: ', activeSource, source.url);
-        // if(restorePlaybackRate && player && activeSource === 'clip'){
-        //     player.one('canplay', setPlaybackRateOnCanPlay);
-        // }
-        // if(player && activeSource === 'live'){
-        //     player.one('canplay', () => player.playbackRate(1));
-        // }
     },[])
 
     const channelLog = console;
@@ -112,7 +89,7 @@ const HLSPlayer = (props) => {
         // }
         // setPlaybackRate(player)
         // if(activeSource === 'live') player.playbackRate(1);
-    },[activeSource]);
+    },[]);
 
     let refreshTimer = null;
 

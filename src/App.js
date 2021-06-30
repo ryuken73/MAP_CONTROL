@@ -90,7 +90,7 @@ function App() {
             setPlayer={setPlayer}
           ></HLSPlayer>
         </div>
-        <Box width="99%" height="100%">
+        <Box width="99%" height="600px">
           <KakaoMap
             setMap={setMap}
             setLocation={setLocation}
@@ -107,16 +107,18 @@ function App() {
 
           ))}
         </Box>
-        <ModalBox>
-          <HLSPlayer 
-              width={640}
-              height={320}
-              source={playerSource}
-              setPlayer={setPlayer}
-           ></HLSPlayer>
-        </ModalBox>
-
+          <ModalBox>
+              <HLSPlayer 
+                  width="90%"
+                    source={playerSource}
+                    setPlayer={setPlayer}
+                ></HLSPlayer>
+          </ModalBox>
       </header>
+      {/* <HLSPlayer 
+          source={playerSource}
+          setPlayer={setPlayer}
+      ></HLSPlayer> */}
     </div>
   );
 }
