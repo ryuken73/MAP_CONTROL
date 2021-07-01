@@ -1,13 +1,10 @@
 import React from 'react';
 import './App.css';
 import {Box, Button} from '@material-ui/core';
-import videojs from 'video.js';
 import KakaoMap from './KakaoMap';
-import OverlayContent from './OverlayContent';
 import HLSPlayer from './HLSPlayer';
 import ModalBox from './ModalBox';
 import cctvs from './sources';
-import Tooltip from '@material-ui/core/Tooltip';
 import axios from 'axios';
 
 const SHOW_ON_MAP = true;
@@ -16,7 +13,6 @@ function App() {
   const [map, setMap] = React.useState(null);
   const [location, setLocation] = React.useState(null);
   const [level, setLevel] = React.useState(null);
-  const [players, setPlayers] = React.useState(new Map());
   const [player, setPlayer] = React.useState(null);
   const [playerDisplay, setPlayerDisplay] = React.useState('none');
   const [playerSource, setPlayerSource] = React.useState({});
@@ -39,29 +35,6 @@ function App() {
       setUrls(cctvsWithUrls)
 
     })
-
-    // cctvs.forEach(cctv => {
-    //   const divElement = document.createElement('video');
-    //   divElement.id = cctv.cctvId;
-    //   divElement.className = 'video-js';
-    //   setPlayers(players => {
-    //     players.set(cctv.cctvId, divElement);
-    //     return new Map(players)
-    //   })
-      // const playersDiv = document.getElementById('players');
-      // playersDiv.appendChild(divElement);
-
-      // const player = videojs(divElement, {}
-        // { sources : 
-        //   [ { src : "test.mp4", type : "video/mp4"} ], 
-        //   poster : "test-poster.png", 
-        //   controls : true, 
-        //   playsinline : true, 
-        //   muted : true, 
-        //   preload : "metadata", 
-        // }
-      // );
-    // })
   },[])
 
   const gotoLocation = React.useCallback(event => {
@@ -83,7 +56,6 @@ function App() {
     if(SHOW_ON_MAP){
       const customOverlay = new window.kakao.maps.CustomOverlay({
         position: moveLatLng,
-        // content: players.get(cctv.cctvId)
         content: playerRef.current,
         xAnchor: 0.5,
         yAnchor: 0
@@ -150,10 +122,6 @@ function App() {
               ></HLSPlayer>
           </ModalBox>
       </header>
-      {/* <HLSPlayer 
-          source={playerSource}
-          setPlayer={setPlayer}
-      ></HLSPlayer> */}
     </div>
   );
 }
