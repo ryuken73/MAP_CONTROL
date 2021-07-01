@@ -3,7 +3,7 @@ import Box from '@material-ui/core/Box';
 import VideoPlayer from './VideoPlayer';
 
 const HLSPlayer = (props) => {
-    console.log('rerender hlsplayer', props.player, process.versions)
+    console.log('rerender hlsplayer', props)
     const {
         player=null, 
         enableAutoRefresh=null, 

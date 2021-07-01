@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
     width: props.contentWidth || "90%",
     backgroundColor: theme.palette.background.paper,
     border: '2px solid #000',
-    boxShadow: theme.shadows[5],
+    boxShadow: theme.shadows[100],
     padding: theme.spacing(1),
   }),
 }));

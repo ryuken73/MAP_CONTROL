@@ -18,16 +18,27 @@ function App() {
   const [level, setLevel] = React.useState(null);
   const [players, setPlayers] = React.useState(new Map());
   const [player, setPlayer] = React.useState(null);
-  const [playerDisplay, setPlayerDisplay] = React.useState('none');
+  const [playerDisplay, setPlayerDisplay] = React.useState('block');
   const [playerSource, setPlayerSource] = React.useState({});
   const [currentId, setCurrentId] = React.useState(null);
+  const [urls, setUrls] = React.useState([]);
 
   console.log('re-render:', location)
   const playerRef = React.useRef(null);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   React.useEffect(() => {
-    // axios.get('http://localhost:',{})
+    const getUrlJob = cctvs.map(async cctv => {
+      const {cctvId} = cctv;
+      const response = await axios.get('http://localhost/encrypted',{params:{cctvId}});
+      return {...cctv, url:response.data.url}
+    })
+
+    Promise.all(getUrlJob)
+    .then(cctvsWithUrls => {
+      setUrls(cctvsWithUrls)
+
+    })
 
     // cctvs.forEach(cctv => {
     //   const divElement = document.createElement('video');
@@ -53,12 +64,14 @@ function App() {
     // })
   },[])
 
-  const gotoLocation = event => {
+  const gotoLocation = React.useCallback(event => {
     const cctvId = event.target.id || event.target.parentElement.id;
     const cctvIdNum = parseInt(cctvId);
     setCurrentId(cctvIdNum);
-    setPlayerDisplay('none');
+    setPlayerDisplay('block');
     const cctv = cctvs.find(cctv => cctv.cctvId === cctvIdNum);
+    const cctvWithUrl = urls.find(url => url.cctvId === cctvIdNum )
+    console.log('####################',cctvWithUrl)
 
     const moveLatLng = new window.kakao.maps.LatLng(cctv.lat, cctv.lng);
     const mapLevel = cctv.mapLevel || 11;
@@ -68,7 +81,6 @@ function App() {
     marker.setMap(map)
 
     if(SHOW_ON_MAP){
-      setPlayerSource({url:'http://localhost'})
       const customOverlay = new window.kakao.maps.CustomOverlay({
         position: moveLatLng,
         // content: players.get(cctv.cctvId)
@@ -77,12 +89,13 @@ function App() {
         yAnchor: 0
       })
       customOverlay.setMap(map)
+      setPlayerSource({url: cctvWithUrl.url})
       setTimeout(() => {
         console.log('change display to block')
         setPlayerDisplay('block');
-      }, 1000)
+      },500)
     }
-  }
+  },[urls])
 
   return (
     <div className="App">
@@ -98,13 +111,13 @@ function App() {
             level:{level ? level:"null"}
           </Box>
         </Box>
-        <div ref={playerRef} style={{display: playerDisplay}}>
-          <Box color="black" fontSize="18px" bgcolor="white">
+        <div ref={playerRef} style={{display: playerDisplay, padding:"3px", "border-color":"black", border:"solid 1px", background:'white'}}>
+          <Box p="5px" color="white" fontSize="18px" bgcolor="black">
             {currentTitle}
           </Box>
           <HLSPlayer 
             width={350}
-            height={250}
+            height={200}
             fluid={false}
             source={playerSource}
             setPlayer={setPlayer}
@@ -133,6 +146,7 @@ function App() {
                 responsive={true}
                 source={playerSource}
                 setPlayer={setPlayer}
+                aspectRatio={'2:1'}
               ></HLSPlayer>
           </ModalBox>
       </header>
