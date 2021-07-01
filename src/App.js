@@ -165,13 +165,13 @@ function App() {
 
           ))}
         </Box>
-        <ModalBox open={modalOpen} setOpen={setModalOpen} contentWidth="80%">
+        <ModalBox open={modalOpen} setOpen={setModalOpen} contentWidth="80%" contentHeight="80%">
             <HLSPlayer 
-              fluid={true}
+              // fluid={true}
+              fill={true}
               responsive={true}
               source={playerSource}
               setPlayer={setPlayer}
-              aspectRatio={'2:1'}
             ></HLSPlayer>
         </ModalBox>
         <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>

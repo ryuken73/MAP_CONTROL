@@ -89,6 +89,7 @@ class VideoPlayer extends Component {
         if(props.fluid) playerOptions.fluid = true;
         if(props.responsive) playerOptions.responsive = true;
         if(props.aspectRatio) playerOptions.responsive = props.aspectRatio;
+        if(props.fill) playerOptions.fill = props.fill;
 
         // playerOptions.fluid = props.fluid;
         // playerOptions.responsive = props.responsive;

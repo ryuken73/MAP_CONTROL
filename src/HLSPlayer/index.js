@@ -14,6 +14,7 @@ const HLSPlayer = (props) => {
         startSecondsOffset=0,
         fluid=false,
         responsive=false,
+        fill=false,
         aspectRatio='2:1'
     } = props;
     console.log('###### source in HLSPlayer:', startSecondsOffset)
@@ -85,13 +86,6 @@ const HLSPlayer = (props) => {
 
     const onVideoCanPlay = React.useCallback(player => {
         channelLog.info(`can play : `);
-        // console.log('can play isTracking(): ',player.liveTracker.isLive())
-        // if(restorePlaybackRate && player){
-        //     const playbackRate = getPlaybackRateStore();
-        //     player.playbackRate(playbackRate);
-        // }
-        // setPlaybackRate(player)
-        // if(activeSource === 'live') player.playbackRate(1);
     },[]);
 
     let refreshTimer = null;
@@ -114,20 +108,6 @@ const HLSPlayer = (props) => {
 
     const onVideoOtherEvent = (eventName, player) => {
         console.log(`event occurred: ${eventName}`)
-        // channelLog.debug(`event occurred: ${eventName}`)
-        // if(eventName === 'durationchange'){
-
-        //     setRecorderStartTimeSeconds({channelNumber, startTimeSeconds:0});
-        //     const duration = player.duration();
-        //     let realDuration;
-        //     if(isValidStopDuration(duration)){
-        //         realDuration = duration;
-        //     } else {
-        //         realDuration = 0;
-        //     }
-        //     setClipLengthSeconds({channelNumber, clipLengthSeconds: realDuration})
-        //     setRecorderStopTimeSeconds({channelNumber, stopTimeSeconds:realDuration}) 
-        // }
         if(eventName === 'abort' && enableAutoRefresh !== null){
             refreshTimer = setInterval(() => {
                 channelLog.info('refresh player because of long buffering')
@@ -153,7 +133,7 @@ const HLSPlayer = (props) => {
     }
 
     return (
-        <Box overflow="hidden">
+        <Box overflow="hidden" width="100%" height="100%">
             <VideoPlayer
                 controls={controls}
                 src={srcObject}
@@ -186,6 +166,7 @@ const HLSPlayer = (props) => {
                 fluid={fluid}
                 responsive={responsive}
                 aspectRatio={aspectRatio}
+                fill={fill}
             />
         </Box>
     );

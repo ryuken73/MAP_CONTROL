@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   paper: props => ({
     margin: 'auto',
+    height: props.contentHeight || "80%",
     width: props.contentWidth || "90%",
     backgroundColor: theme.palette.background.paper,
     border: '2px solid #000',
@@ -26,19 +27,19 @@ export default function SimpleModal(props) {
   };
 
   return (
-    <React.Fragment>
+    <Box>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
       >
-        <Box display="flex" height="100%">
+        <Box onClick={handleClose} display="flex" height="100%">
           <Box className={classes.paper}>
             {children}
           </Box>
         </Box>
       </Modal>
-    </React.Fragment>
+    </Box>
   );
 }
