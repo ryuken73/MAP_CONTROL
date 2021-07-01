@@ -18,7 +18,7 @@ function App() {
   const [level, setLevel] = React.useState(null);
   const [players, setPlayers] = React.useState(new Map());
   const [player, setPlayer] = React.useState(null);
-  const [playerDisplay, setPlayerDisplay] = React.useState('block');
+  const [playerDisplay, setPlayerDisplay] = React.useState('none');
   const [playerSource, setPlayerSource] = React.useState({});
   const [currentId, setCurrentId] = React.useState(null);
   const [urls, setUrls] = React.useState([]);
@@ -68,7 +68,7 @@ function App() {
     const cctvId = event.target.id || event.target.parentElement.id;
     const cctvIdNum = parseInt(cctvId);
     setCurrentId(cctvIdNum);
-    setPlayerDisplay('block');
+    setPlayerDisplay('none');
     const cctv = cctvs.find(cctv => cctv.cctvId === cctvIdNum);
     const cctvWithUrl = urls.find(url => url.cctvId === cctvIdNum )
     console.log('####################',cctvWithUrl)
@@ -89,10 +89,10 @@ function App() {
         yAnchor: 0
       })
       customOverlay.setMap(map)
-      setPlayerSource({url: cctvWithUrl.url})
       setTimeout(() => {
         console.log('change display to block')
         setPlayerDisplay('block');
+        setPlayerSource({url: cctvWithUrl.url})
       },500)
     }
   },[urls])
