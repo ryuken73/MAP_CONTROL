@@ -18,11 +18,8 @@ export default function SimpleModal(props) {
   const classes = useStyles(props);
   const {children} = props;
   // getModalStyle is not a pure function, we roll the style only on the first render
-  const [open, setOpen] = React.useState(false);
-
-  const handleOpen = () => {
-    setOpen(true);
-  };
+  // const [open, setOpen] = React.useState(false);
+  const {open, setOpen} = props;
 
   const handleClose = () => {
     setOpen(false);
@@ -30,9 +27,6 @@ export default function SimpleModal(props) {
 
   return (
     <React.Fragment>
-      <button type="button" onClick={handleOpen}>
-        Open Modal
-      </button>
       <Modal
         open={open}
         onClose={handleClose}
