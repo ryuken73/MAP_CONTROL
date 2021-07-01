@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import {Box, Button} from '@material-ui/core';
+import Loading from './Loading';
 import KakaoMap from './KakaoMap';
 import HLSPlayer from './HLSPlayer';
 import ModalBox from './ModalBox';
@@ -8,6 +9,7 @@ import cctvs from './sources';
 import axios from 'axios';
 
 const SHOW_ON_MAP = true;
+const ENCRIPTED_URL_PROVIDER = 'http://localhost/encrypted'
 
 function App() {
   const [map, setMap] = React.useState(null);
@@ -18,22 +20,30 @@ function App() {
   const [playerSource, setPlayerSource] = React.useState({});
   const [currentId, setCurrentId] = React.useState(null);
   const [urls, setUrls] = React.useState([]);
+  const [loadingOpen, setLoadingOpen] = React.useState(false)
 
   console.log('re-render:', location)
   const playerRef = React.useRef(null);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   React.useEffect(() => {
+    setLoadingOpen(true)
     const getUrlJob = cctvs.map(async cctv => {
-      const {cctvId} = cctv;
-      const response = await axios.get('http://localhost/encrypted',{params:{cctvId}});
-      return {...cctv, url:response.data.url}
+      try {
+        const {cctvId} = cctv;
+        const response = await axios.get(ENCRIPTED_URL_PROVIDER,{params:{cctvId}});
+        return {...cctv, url:response.data.url}
+      } catch(err){
+        return false;
+      }
     })
-
     Promise.all(getUrlJob)
     .then(cctvsWithUrls => {
+      setLoadingOpen(false)
+      if(cctvsWithUrls.some(url => url === false)){
+        alert(`Error getting encrypted Url. check ${ENCRIPTED_URL_PROVIDER}`)
+      }
       setUrls(cctvsWithUrls)
-
     })
   },[])
 
@@ -112,15 +122,16 @@ function App() {
 
           ))}
         </Box>
-          <ModalBox contentWidth="80%">
-              <HLSPlayer 
-                fluid={true}
-                responsive={true}
-                source={playerSource}
-                setPlayer={setPlayer}
-                aspectRatio={'2:1'}
-              ></HLSPlayer>
-          </ModalBox>
+        <ModalBox contentWidth="80%">
+            <HLSPlayer 
+              fluid={true}
+              responsive={true}
+              source={playerSource}
+              setPlayer={setPlayer}
+              aspectRatio={'2:1'}
+            ></HLSPlayer>
+        </ModalBox>
+        <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>
       </header>
     </div>
   );
