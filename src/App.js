@@ -29,7 +29,8 @@ const movePositionNSetLevel = (map, lat, lng, level) => {
 
 const showMarker = (map, targetPosition) => {
   const marker = new window.kakao.maps.Marker({position: targetPosition});
-  marker.setMap(map)
+  marker.setMap(map);
+  return marker;
 }
 
 const showOverlay = (map, targetPosition, playerNode) => {
@@ -79,34 +80,52 @@ function App() {
     })
   },[])
 
+  const markerClickHandler = (cctvId, urls) => {
+    return () => {
+      setCurrentId(cctvId);
+      setPlayerDisplay('none');
+      const targetPosition = movePositionNSetLevelById(map, cctvId);
+      showSmallPlayerById(map, cctvId, urls, targetPosition, playerRef);
+    }
+  }
+
   React.useEffect(() => {
     if(map === null) return;
     cctvs.forEach(cctv => {
       const targetPosition = getPosition(cctv.lat, cctv.lng);
-      showMarker(map, targetPosition)
+      const marker = showMarker(map, targetPosition);
+      window.kakao.maps.event.addListener(marker, 'click', markerClickHandler(cctv.cctvId, urls))
     })
     movePositionNSetLevel(map, INI_LAT, INI_LNG, INI_LEVEL)
-  },[map])
+  },[map, urls])
+
+  const movePositionNSetLevelById = (map, cctvId) => {
+    const cctv = cctvs.find(cctv => cctv.cctvId === cctvId);
+    const targetPosition = movePositionNSetLevel(map, cctv.lat, cctv.lng, cctv.mapLevel);
+    return targetPosition;
+  }
+
+  const showSmallPlayerById = (map, cctvId, urls, targetPosition, playerRef) => {
+    console.log('### urls:', urls)
+    const playerNode = playerRef.current;
+    showOverlay(map, targetPosition, playerNode);
+    const cctvWithUrl = urls.find(url => url.cctvId === cctvId )
+    cctvWithUrl && setTimeout(() => {
+      setPlayerDisplay('block');
+      setPlayerSource({url: cctvWithUrl.url})
+    },500)
+  }
 
   const gotoLocation = React.useCallback(event => {
     const cctvId = event.target.id || event.target.parentElement.id;
     const cctvIdNum = parseInt(cctvId);
     setCurrentId(cctvIdNum);
     setPlayerDisplay('none');
-    const cctv = cctvs.find(cctv => cctv.cctvId === cctvIdNum);
-    const cctvWithUrl = urls.find(url => url.cctvId === cctvIdNum )
-
-    const targetPosition = movePositionNSetLevel(map, cctv.lat, cctv.lng, cctv.mapLevel)
-    showMarker(map, targetPosition);
-
+    const targetPosition = movePositionNSetLevelById(map, cctvIdNum)
     if(!SHOW_ON_MAP) return;
-    const playerNode = playerRef.current;
-    showOverlay(map, targetPosition, playerNode);
-    setTimeout(() => {
-      setPlayerDisplay('block');
-      setPlayerSource({url: cctvWithUrl.url})
-    },500)
-  },[urls])
+    console.log('### urls:', urls)
+    showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef)
+  },[map, urls])
 
   const maximizeVideo = event => {
     setModalOpen(true)
