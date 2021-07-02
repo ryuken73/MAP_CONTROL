@@ -40,6 +40,19 @@ const showOverlay = (map, targetPosition, playerNode) => {
     xAnchor: 0.5,
     yAnchor: 0
   })
+  const {
+    onMouseDown,
+    onMouseUp,
+    addEventHandle,
+  } = require('./lib/mapOverlayUtil')(map, customOverlay);
+
+  // 커스텀 오버레이에 mousedown이벤트를 등록합니다 
+  addEventHandle(playerNode, 'mousedown', onMouseDown);
+
+  // mouseup 이벤트가 일어났을때 mousemove 이벤트를 제거하기 위해
+  // document에 mouseup 이벤트를 등록합니다 
+  addEventHandle(document, 'mouseup', onMouseUp);
+
   customOverlay.setMap(map)
 }
 
