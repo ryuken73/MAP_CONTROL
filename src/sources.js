@@ -34,7 +34,7 @@ const cctv = [
     {num:33,cctvId:9997,title:"서울 송파구 탄천주차장",lat:37.51473,lng:127.0697389, mapLevel:8},
     {num:34,cctvId:9998,title:"서울 서초구 반포한강시민공원",lat:37.51172,lng:126.9971194, mapLevel:8},
     {num:35,cctvId:9999,title:"서울 강남구 강남대로",lat:37.50135,lng:127.0261972, mapLevel:8},
-    {num:36,cctvId:9956,title:"파주 감악산",lat:37.941703,lng:126.970198}
+    {num:36,cctvId:9956,title:"경기도 파주 감악산",lat:37.941703,lng:126.970198}
 ]
 
 export default cctv;
