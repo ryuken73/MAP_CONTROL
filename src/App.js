@@ -23,8 +23,8 @@ import teal from '@material-ui/core/colors/teal';
 import cyan from '@material-ui/core/colors/cyan';
 import cctvImage from './assets/CCTV_Camera.png';
 
-const INI_LAT = '36.313556278060986';
-const INI_LNG = '127.84877209657853';
+const INI_LAT = '36.813556278060986';
+const INI_LNG = '127.54877209657853';
 const INI_LEVEL = 13;
 const SHOW_ON_MAP = true;
 const ENCRIPTED_URL_PROVIDER = 'http://localhost/encrypted';
@@ -307,7 +307,7 @@ function App() {
                     width="80px"
                     onClick={onClickArea}
                     bgcolor={currentArea !== area ? grey[400]:grey[900]}
-                    activeColor={grey[900]}
+                    // activeColor={grey[900]}
                     hoverColor={grey[600]} 
                   >
                     {area}
