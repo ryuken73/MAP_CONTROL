@@ -75,7 +75,6 @@ module.exports = (map, customoverlay) => {
 
     return {
         onMouseDown,
-        onMouseMove,
         onMouseUp,
         addEventHandle
     }
