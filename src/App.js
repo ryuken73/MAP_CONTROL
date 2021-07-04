@@ -21,6 +21,7 @@ import brown from '@material-ui/core/colors/brown';
 import grey from '@material-ui/core/colors/grey';
 import teal from '@material-ui/core/colors/teal';
 import cyan from '@material-ui/core/colors/cyan';
+import cctvImage from './assets/CCTV_Camera.png';
 
 const INI_LAT = '36.313556278060986';
 const INI_LNG = '127.84877209657853';
@@ -29,6 +30,9 @@ const SHOW_ON_MAP = true;
 const ENCRIPTED_URL_PROVIDER = 'http://localhost/encrypted';
 const MAX_LEVEL = 13;
 
+const imageSize = new window.kakao.maps.Size(60,50);
+const imageOption = {offset: new window.kakao.maps.Point(27, 50)};
+const markerImage = new window.kakao.maps.MarkerImage(cctvImage, imageSize, imageOption);
 
 const DarkPaper = styled(Paper)`
   background-color: #424242;
@@ -47,7 +51,7 @@ const movePositionNSetLevel = (map, lat, lng, level) => {
 }
 
 const showMarker = (map, targetPosition) => {
-  const marker = new window.kakao.maps.Marker({position: targetPosition});
+  const marker = new window.kakao.maps.Marker({position: targetPosition, image:markerImage});
   marker.setMap(map);
   return marker;
 }
@@ -298,7 +302,7 @@ function App() {
                     mt="15px"
                     width="80px"
                     onClick={onClickArea}
-                    bgcolor={currentArea !== area ? deepPurple[100]:deepPurple[900]}
+                    bgcolor={currentArea !== area ? grey[400]:grey[900]}
                   >
                     {area}
                   </SmallButton>
@@ -310,6 +314,7 @@ function App() {
           {areas.map((area, areaIndex) => (
             <AbsolutePositionBox
               width="auto"
+              height="auto"
               top={30+areaIndex*45}
               left="100px"
               // display={locationDisplay[areaIndex]}
@@ -332,7 +337,7 @@ function App() {
                       mt="15px"
                       width="auto"
                       onClick={gotoLocation}
-                      bgcolor={cctv.cctvId === currentId ? deepPurple[900]:deepPurple[100]}
+                      bgcolor={cctv.cctvId === currentId ? grey[900]:grey[400]}
                     >
                       {cctv.title}  
                     </SmallButton>
