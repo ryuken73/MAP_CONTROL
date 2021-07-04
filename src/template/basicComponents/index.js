@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
+import Box from '@material-ui/core/Box';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
@@ -29,6 +30,9 @@ const BasicButton  = styled(Button)`
     width: ${props => props.width};
     &:disabled {
         color: darkgreen;
+    }
+    &:hover {
+        background: black;
     }
 `
 
@@ -70,11 +74,29 @@ const BasicTextField = styled(TextField)`
         color: ${props => props.fontcolor || "white"};
     }
 `
+const AbsolutePositionBox = styled(Box)`
+  position: absolute;
+  overflow: hidden;
+  z-index: 10;
+  top: ${props => props.top || '30px'};
+  left: ${props => props.left || '10px'};
+  width: ${props => props.width || '50px'};
+  height: ${props => props.height || '100%'};
+  font-size: ${props => props.fontsize || '20px'};
+  text-align: ${props => props.textalign || 'center'};
+`
+
+const TransparentPaper = styled(Box)`
+  background-color: unset;
+  opacity: 1
+`
 
 export {
     BasicButton,
     BasicSelect,
     BasicLink,
     BasicIconButton,
-    BasicTextField
+    BasicTextField,
+    AbsolutePositionBox,
+    TransparentPaper
 }
