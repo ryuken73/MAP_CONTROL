@@ -251,7 +251,7 @@ function App() {
           </Box>
         </Box> */}
         <div ref={playerRef} style={{display: playerDisplay, padding:"3px", borderColor:"black", border:"solid 1px black", background:'white'}}>
-          <Box display="flex" p="5px" color="white" fontSize="18px" bgcolor="black">
+          <Box display="flex" p="5px" color="white" fontSize="18px" bgcolor="black" minWidth="350px">
             <Box mr="auto">
               <SmallPaddingIconButton>
                 <CloseIcon
@@ -307,6 +307,8 @@ function App() {
                     width="80px"
                     onClick={onClickArea}
                     bgcolor={currentArea !== area ? grey[400]:grey[900]}
+                    activeColor={grey[900]}
+                    hoverColor={grey[600]} 
                   >
                     {area}
                   </SmallButton>
@@ -341,6 +343,8 @@ function App() {
                       mt="15px"
                       width="auto"
                       onClick={gotoLocation}
+                      hoverColor={grey[600]}
+                      activeColor={grey[900]}
                       bgcolor={cctv.cctvId === currentId ? grey[900]:grey[400]}
                     >
                       {cctv.title}  
@@ -353,13 +357,14 @@ function App() {
           ))}
 
         </Box>
-        <ModalBox open={modalOpen} setOpen={setModalOpen} contentWidth="80%" contentHeight="80%">
+        <ModalBox open={modalOpen} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
             <HLSPlayer 
               // fluid={true}
               fill={true}
               responsive={true}
               source={playerSource}
               setPlayer={setPlayer}
+              aspectRatio={"16:9"}
             ></HLSPlayer>
         </ModalBox>
         <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>

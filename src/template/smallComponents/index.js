@@ -35,6 +35,12 @@ const SmallButton  = styled(Button)`
     &:disabled {
         color: darkgreen;
     }
+    &:hover {
+        background-color: ${props => props.hoverColor};
+    }
+    &:active {
+        background-color: ${props => props.activeColor};
+    }
 `
 
 const SmallMarginTextField = styled(TextField)`
