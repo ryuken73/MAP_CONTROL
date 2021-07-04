@@ -12,7 +12,7 @@ import axios from 'axios';
 import FullscreenIcon from '@material-ui/icons/Fullscreen';
 import CloseIcon from '@material-ui/icons/Close';
 import styled from 'styled-components';
-import {SmallButton} from './template/smallComponents';
+import {SmallButton, SmallPaddingIconButton} from './template/smallComponents';
 import {AbsolutePositionBox, TransparentPaper} from './template/basicComponents';
 import SimpleSlide from './SimpleSlide';
 import deepPurple from '@material-ui/core/colors/deepPurple';
@@ -253,21 +253,25 @@ function App() {
         <div ref={playerRef} style={{display: playerDisplay, padding:"3px", borderColor:"black", border:"solid 1px black", background:'white'}}>
           <Box display="flex" p="5px" color="white" fontSize="18px" bgcolor="black">
             <Box mr="auto">
-              <CloseIcon
-                fontSize="default"
-                style={{color:"grey"}}
-                onClick={closeVideo}
-              ></CloseIcon>
+              <SmallPaddingIconButton>
+                <CloseIcon
+                  fontSize="default"
+                  style={{color:"grey"}}
+                  onClick={closeVideo}
+                ></CloseIcon>
+              </SmallPaddingIconButton>
             </Box>
             <Box m="auto" width="100%">
               {currentTitle}
             </Box>
             <Box ml="auto">
-              <FullscreenIcon
-                fontSize="default"
-                style={{color:"grey"}}
-                onClick={maximizeVideo}
-              ></FullscreenIcon>
+              <SmallPaddingIconButton>
+                <FullscreenIcon
+                  fontSize="default"
+                  style={{color:"grey"}}
+                  onClick={maximizeVideo}
+                ></FullscreenIcon>
+              </SmallPaddingIconButton>
             </Box>
           </Box>
 
