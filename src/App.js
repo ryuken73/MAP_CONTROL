@@ -180,6 +180,8 @@ function App() {
     const playerNode = playerRef.current;
     const currentOverlay = showOverlay(map, targetPosition, playerNode);
     const cctvWithUrl = urls.find(url => url.cctvId === cctvId )
+    setPlayerSource({url: 'none'})
+
     cctvWithUrl && setTimeout(() => {
       setPlayerDisplay('block');
       setPlayerSource({url: cctvWithUrl.url})
