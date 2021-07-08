@@ -27,7 +27,12 @@ const INI_LAT = '36.813556278060986';
 const INI_LNG = '127.54877209657853';
 const INI_LEVEL = 13;
 const SHOW_ON_MAP = true;
-const ENCRIPTED_URL_PROVIDER = 'http://localhost/encrypted';
+// const ENCRIPTED_URL_PROVIDER = 'http://localhost/encrypted';
+const {NODE_ENV} = process.env;
+
+const ENCRIPTED_URL_PROVIDER = process.env.REACT_APP_ENCRIPTED_URL_PROVIDER;
+console.log(NODE_ENV)
+console.log(ENCRIPTED_URL_PROVIDER)
 const MAX_LEVEL = 13;
 
 const imageSize = new window.kakao.maps.Size(60,50);
