@@ -261,6 +261,11 @@ function App() {
     gotoLocation(cctvArray[0].cctvId);
   },[areas, cctvsInAreas, gotoLocation])
 
+  React.useState(()=>{
+    if(location === null) return;
+    console.log(`lat: ${location.getLat()}, lng: ${location.getLng()}, level: ${level}`);
+  },[location, level])
+
   return (
     <div className="App">
       <header className="App-header">
