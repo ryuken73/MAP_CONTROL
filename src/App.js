@@ -109,8 +109,10 @@ function App() {
   const [location, setLocation] = React.useState(null);
   const [level, setLevel] = React.useState(null);
   const [player, setPlayer] = React.useState(null);
+  const [modalPlayer, setModalPlayer] = React.useState(null);
   const [playerDisplay, setPlayerDisplay] = React.useState('none');
   const [playerSource, setPlayerSource] = React.useState({});
+  const [clonedSource, setClonedSource] = React.useState({});
   const [currentId, setCurrentId] = React.useState(null);
   const [urls, setUrls] = React.useState([]);
   const [loadingOpen, setLoadingOpen] = React.useState(false);
@@ -124,6 +126,7 @@ function App() {
 
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
+  const modalPlayerRef = React.useRef(null);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   React.useEffect(() => {
@@ -189,9 +192,21 @@ function App() {
 
     cctvWithUrl && setTimeout(() => {
       setPlayerDisplay('block');
-      setPlayerSource({url: cctvWithUrl.url})
+      setPlayerSource({url: cctvWithUrl.url});
+      // mirrorModalPlayer();
     },500)
     setCurrentOverlay(currentOverlay);
+  }
+
+  const mirrorModalPlayer = () => {
+    const playerNode = playerRef.current;
+    const videoElement =  playerNode.querySelector('video');
+    console.log('### videoElement:', videoElement);
+    const mediaStream = videoElement.captureStream();
+
+    var modalVideoPlayer = modalPlayer.tech().el();
+    modalVideoPlayer.srcObject = null;
+    modalVideoPlayer.srcObject = mediaStream;
   }
 
   const gotoLocation = React.useCallback(event => {
@@ -203,11 +218,14 @@ function App() {
     const targetPosition = movePositionNSetLevelById(map, cctvIdNum)
     if(!SHOW_ON_MAP) return;
     console.log('### urls:', urls)
-    showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef)
+    showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef);
   },[map, urls])
 
   const maximizeVideo = event => {
-    setModalOpen(true);
+    mirrorModalPlayer();
+    setTimeout(() => {
+      setModalOpen(true);
+    })
   }
 
   const closeVideo = event => {
@@ -281,7 +299,6 @@ function App() {
               </SmallPaddingIconButton>
             </Box>
           </Box>
-
           <HLSPlayer 
             width={350}
             height={200}
@@ -358,22 +375,19 @@ function App() {
                     </SmallButton>
                   </SimpleSlide>
                 ))}
-
               </TransparentPaper>
             </AbsolutePositionBox>
           ))}
-
-        </Box>
-        <ModalBox open={modalOpen} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
-            <HLSPlayer 
-              // fluid={true}
-              fill={true}
-              responsive={true}
-              source={playerSource}
-              setPlayer={setPlayer}
-              aspectRatio={"16:9"}
-            ></HLSPlayer>
+        <ModalBox ref={modalPlayerRef} open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
+          <HLSPlayer 
+            ref={modalPlayerRef}
+            fill={true}
+            responsive={true}
+            setPlayer={setModalPlayer}
+            aspectRatio={"16:9"}
+          ></HLSPlayer>
         </ModalBox>
+        </Box>
         <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>
       </header>
     </div>

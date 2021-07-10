@@ -15,11 +15,13 @@ const useStyles = makeStyles((theme) => ({
   }),
 }));
 
-export default function SimpleModal(props) {
+function SimpleModal(props) {
+
+}
+
+export default React.forwardRef((props, ref) => {
   const classes = useStyles(props);
   const {children} = props;
-  // getModalStyle is not a pure function, we roll the style only on the first render
-  // const [open, setOpen] = React.useState(false);
   console.log('### modal:', props)
   const {open, setOpen} = props;
 
@@ -30,10 +32,12 @@ export default function SimpleModal(props) {
   return (
     <Box>
       <Modal
+        ref={ref}
         open={open}
         onClose={handleClose}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
+        {...props}
       >
         <Box onClick={handleClose} display="flex" height="100%">
           <Box className={classes.paper}>
@@ -43,4 +47,4 @@ export default function SimpleModal(props) {
       </Modal>
     </Box>
   );
-}
+})
