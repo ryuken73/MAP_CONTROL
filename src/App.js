@@ -104,6 +104,7 @@ function App() {
   const [location, setLocation] = React.useState(null);
   const [level, setLevel] = React.useState(null);
   const [player, setPlayer] = React.useState(null);
+  const [modalPlayer, setModalPlayer] = React.useState(null);
   const [playerDisplay, setPlayerDisplay] = React.useState('none');
   const [playerSource, setPlayerSource] = React.useState({});
   const [clonedSource, setClonedSource] = React.useState({});
@@ -120,9 +121,7 @@ function App() {
 
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
-  const hiddenPlayerRef = React.useRef(null);
-  const canvasRef = React.useRef(null);
-  const topVideoRef = React.useRef(null);
+  const modalPlayerRef = React.useRef(null);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   React.useEffect(() => {
@@ -186,7 +185,8 @@ function App() {
     const cctvWithUrl = urls.find(url => url.cctvId === cctvId )
     cctvWithUrl && setTimeout(() => {
       setPlayerDisplay('block');
-      setPlayerSource({url: cctvWithUrl.url})
+      setPlayerSource({url: cctvWithUrl.url});
+      // mirrorModalPlayer();
     },500)
     setCurrentOverlay(currentOverlay);
   }
@@ -194,11 +194,12 @@ function App() {
   const mirrorModalPlayer = () => {
     const playerNode = playerRef.current;
     const videoElement =  playerNode.querySelector('video');
+    console.log('### videoElement:', videoElement);
     const mediaStream = videoElement.captureStream();
-    setClonedSource({url: mediaStream});
-    // topNode.srcObject = mediaStream
-    // topNode.play()
 
+    var modalVideoPlayer = modalPlayer.tech().el();
+    modalVideoPlayer.srcObject = null;
+    modalVideoPlayer.srcObject = mediaStream;
   }
 
   const gotoLocation = React.useCallback(event => {
@@ -211,14 +212,13 @@ function App() {
     if(!SHOW_ON_MAP) return;
     console.log('### urls:', urls)
     showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef);
-    // mirrorToCanvas();
   },[map, urls])
 
   const maximizeVideo = event => {
-    // mirrorToCanvas()  ;
-    // mirrorToTop();
     mirrorModalPlayer();
-    setModalOpen(true);
+    setTimeout(() => {
+      setModalOpen(true);
+    })
   }
 
   const closeVideo = event => {
@@ -254,27 +254,8 @@ function App() {
     gotoLocation(cctvArray[0].cctvId);
   },[areas, cctvsInAreas, gotoLocation])
 
-  const draw = (video, context, width, height) => {
-    if(video.paused || video.ended) return false;
-    context.drawImage(video, 0, 0, width, height);
-    setTimeout(draw, 20, video, context, width, height);
-  }
-
-  // React.useEffect(() => {
-  //   const canvasElement = canvasRef.current;
-  //   if(canvasElement === null) return;
-  //   const context = canvasElement.getContext('2d');
-  //   console.log('###context:',context)
-  //   player.on('play', () => {
-  //     console.log('player start plaing')
-  //     draw(player, context, 600, 400);
-  //   })
-  // }, [player])
-
-
   return (
     <div className="App">
-      <video ref={topVideoRef}></video>
       <header className="App-header">
         {/* <Box display="flex" flexDirection="row" fontSize="15px">
           <Box>
@@ -311,7 +292,6 @@ function App() {
               </SmallPaddingIconButton>
             </Box>
           </Box>
-
           <HLSPlayer 
             width={350}
             height={200}
@@ -388,19 +368,17 @@ function App() {
                     </SmallButton>
                   </SimpleSlide>
                 ))}
-
               </TransparentPaper>
             </AbsolutePositionBox>
           ))}
-        <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
-            <HLSPlayer 
-              fill={true}
-              responsive={true}
-              source={clonedSource}
-              type="video"
-              setPlayer={setPlayer}
-              aspectRatio={"16:9"}
-            ></HLSPlayer>
+        <ModalBox ref={modalPlayerRef} open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
+          <HLSPlayer 
+            ref={modalPlayerRef}
+            fill={true}
+            responsive={true}
+            setPlayer={setModalPlayer}
+            aspectRatio={"16:9"}
+          ></HLSPlayer>
         </ModalBox>
         </Box>
         <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>
