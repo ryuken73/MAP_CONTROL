@@ -106,6 +106,7 @@ function App() {
   const [player, setPlayer] = React.useState(null);
   const [playerDisplay, setPlayerDisplay] = React.useState('none');
   const [playerSource, setPlayerSource] = React.useState({});
+  const [clonedSource, setClonedSource] = React.useState({});
   const [currentId, setCurrentId] = React.useState(null);
   const [urls, setUrls] = React.useState([]);
   const [loadingOpen, setLoadingOpen] = React.useState(false);
@@ -119,6 +120,9 @@ function App() {
 
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
+  const hiddenPlayerRef = React.useRef(null);
+  const canvasRef = React.useRef(null);
+  const topVideoRef = React.useRef(null);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   React.useEffect(() => {
@@ -187,6 +191,16 @@ function App() {
     setCurrentOverlay(currentOverlay);
   }
 
+  const mirrorModalPlayer = () => {
+    const playerNode = playerRef.current;
+    const videoElement =  playerNode.querySelector('video');
+    const mediaStream = videoElement.captureStream();
+    setClonedSource({url: mediaStream});
+    // topNode.srcObject = mediaStream
+    // topNode.play()
+
+  }
+
   const gotoLocation = React.useCallback(event => {
     console.log('goLocation:', event, typeof(event))
     const cctvId = typeof(event) === 'number' ? event : event.target.id || event.target.parentElement.id;
@@ -196,10 +210,14 @@ function App() {
     const targetPosition = movePositionNSetLevelById(map, cctvIdNum)
     if(!SHOW_ON_MAP) return;
     console.log('### urls:', urls)
-    showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef)
+    showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef);
+    // mirrorToCanvas();
   },[map, urls])
 
   const maximizeVideo = event => {
+    // mirrorToCanvas()  ;
+    // mirrorToTop();
+    mirrorModalPlayer();
     setModalOpen(true);
   }
 
@@ -236,8 +254,27 @@ function App() {
     gotoLocation(cctvArray[0].cctvId);
   },[areas, cctvsInAreas, gotoLocation])
 
+  const draw = (video, context, width, height) => {
+    if(video.paused || video.ended) return false;
+    context.drawImage(video, 0, 0, width, height);
+    setTimeout(draw, 20, video, context, width, height);
+  }
+
+  // React.useEffect(() => {
+  //   const canvasElement = canvasRef.current;
+  //   if(canvasElement === null) return;
+  //   const context = canvasElement.getContext('2d');
+  //   console.log('###context:',context)
+  //   player.on('play', () => {
+  //     console.log('player start plaing')
+  //     draw(player, context, 600, 400);
+  //   })
+  // }, [player])
+
+
   return (
     <div className="App">
+      <video ref={topVideoRef}></video>
       <header className="App-header">
         {/* <Box display="flex" flexDirection="row" fontSize="15px">
           <Box>
@@ -355,18 +392,17 @@ function App() {
               </TransparentPaper>
             </AbsolutePositionBox>
           ))}
-
-        </Box>
-        <ModalBox open={modalOpen} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
+        <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
             <HLSPlayer 
-              // fluid={true}
               fill={true}
               responsive={true}
-              source={playerSource}
+              source={clonedSource}
+              type="video"
               setPlayer={setPlayer}
               aspectRatio={"16:9"}
             ></HLSPlayer>
         </ModalBox>
+        </Box>
         <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>
       </header>
     </div>

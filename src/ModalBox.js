@@ -34,6 +34,7 @@ export default function SimpleModal(props) {
         onClose={handleClose}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
+        {...props}
       >
         <Box onClick={handleClose} display="flex" height="100%">
           <Box className={classes.paper}>
