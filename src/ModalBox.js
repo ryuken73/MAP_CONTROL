@@ -2,6 +2,8 @@ import React from 'react';
 import Modal from '@material-ui/core/Modal';
 import Box from '@material-ui/core/Box'
 import { makeStyles } from '@material-ui/core/styles';
+import Fade from '@material-ui/core/Fade';
+import Zoom from '@material-ui/core/Zoom';
 
 const useStyles = makeStyles((theme) => ({
   paper: props => ({
@@ -16,10 +18,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function SimpleModal(props) {
-
-}
-
-export default React.forwardRef((props, ref) => {
   const classes = useStyles(props);
   const {children} = props;
   console.log('### modal:', props)
@@ -32,19 +30,24 @@ export default React.forwardRef((props, ref) => {
   return (
     <Box>
       <Modal
-        ref={ref}
         open={open}
         onClose={handleClose}
         aria-labelledby="simple-modal-title"
         aria-describedby="simple-modal-description"
         {...props}
       >
-        <Box onClick={handleClose} display="flex" height="100%">
-          <Box className={classes.paper}>
-            {children}
+        <Zoom in={open} timeout={500}>
+        {/* <Fade in={open} timeout={300}>  */}
+          <Box onClick={handleClose} display="flex" height="100%">
+            <Box className={classes.paper}>
+              {children}
+            </Box>
           </Box>
-        </Box>
+        {/* </Fade> */}
+        </Zoom>
       </Modal>
     </Box>
   );
-})
+}
+
+export default SimpleModal;
