@@ -33,56 +33,11 @@ const {NODE_ENV} = process.env;
 const ENCRIPTED_URL_PROVIDER = process.env.REACT_APP_ENCRIPTED_URL_PROVIDER;
 console.log(NODE_ENV)
 console.log(ENCRIPTED_URL_PROVIDER)
-const MAX_LEVEL = 13;
+const MAX_MAP_LEVEL = 13;
 
-const imageSize = new window.kakao.maps.Size(60,50);
-const imageOption = {offset: new window.kakao.maps.Point(27, 50)};
-const markerImage = new window.kakao.maps.MarkerImage(cctvImage, imageSize, imageOption);
 
-const DarkPaper = styled(Paper)`
-  background-color: #424242;
-`
 
-const getPosition = (lat, lng) => {
-  return new window.kakao.maps.LatLng(lat, lng);
-}
-
-const movePositionNSetLevel = (map, lat, lng, level) => {
-    const moveLatLng = getPosition(lat, lng);
-    const mapLevel = level || 11;
-    map.setLevel(mapLevel, {anchor: moveLatLng})
-    map.panTo(moveLatLng);
-    return moveLatLng;
-}
-
-const showMarker = (map, targetPosition) => {
-  const marker = new window.kakao.maps.Marker({position: targetPosition, image:markerImage});
-  marker.setMap(map);
-  return marker;
-}
-
-const showOverlay = (map, targetPosition, playerNode) => {
-  const customOverlay = new window.kakao.maps.CustomOverlay({
-    position: targetPosition,
-    content: playerNode,
-    xAnchor: 0.5,
-    yAnchor: 0
-  })
-  const {
-    onMouseDown,
-    onMouseUp,
-    addEventHandle,
-  } = require('./lib/mapOverlayUtil')(map, customOverlay);
-
-  // 커스텀 오버레이에 mousedown이벤트를 등록합니다 
-  addEventHandle(playerNode, 'mousedown', onMouseDown);
-
-  // mouseup 이벤트가 일어났을때 mousemove 이벤트를 제거하기 위해
-  // document에 mouseup 이벤트를 등록합니다 
-  addEventHandle(document, 'mouseup', onMouseUp);
-  customOverlay.setMap(map)
-  return customOverlay
-}
+const {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} = require('./lib/mapUtil')()
 
 const setUniqAreasFromSources = (cctvs, setFunction) => {
   const areasOnly = cctvs.map(cctv => {
@@ -112,7 +67,6 @@ function App() {
   const [modalPlayer, setModalPlayer] = React.useState(null);
   const [playerDisplay, setPlayerDisplay] = React.useState('none');
   const [playerSource, setPlayerSource] = React.useState({});
-  const [clonedSource, setClonedSource] = React.useState({});
   const [currentId, setCurrentId] = React.useState(null);
   const [urls, setUrls] = React.useState([]);
   const [loadingOpen, setLoadingOpen] = React.useState(false);
@@ -120,15 +74,14 @@ function App() {
   const [currentOverlay, setCurrentOverlay] = React.useState(null);
   const [areas, setAreas] = React.useState([]);
   const [cctvsInAreas, setCCTVsInAreas] = React.useState(new Map());
-  const [locationY, setLocationY] = React.useState('30px');
   const [locationDisplay, setLocationDisplay] = React.useState([]);
   const [currentArea, setCurrentArea] = React.useState([]);
 
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
-  const modalPlayerRef = React.useRef(null);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
+  // get hls urls for individual cctvs
   React.useEffect(() => {
     setLoadingOpen(true);
     const uniqAreas = setUniqAreasFromSources(cctvs, setAreas);
@@ -169,9 +122,12 @@ function App() {
 
   React.useEffect(() => {
     if(map === null) return;
+    const markerImageSize = new window.kakao.maps.Size(60,50);
+    const markerImageOptions = {offset: new window.kakao.maps.Point(27, 50)};
+    const markerImage = makeMarkerImage(cctvImage, markerImageSize, markerImageOptions);
     cctvs.forEach(cctv => {
       const targetPosition = getPosition(cctv.lat, cctv.lng);
-      const marker = showMarker(map, targetPosition);
+      const marker = showMarker(map, markerImage, targetPosition);
       window.kakao.maps.event.addListener(marker, 'click', markerClickHandler(cctv.cctvId, urls))
     })
     movePositionNSetLevel(map, INI_LAT, INI_LNG, INI_LEVEL)
@@ -203,8 +159,7 @@ function App() {
     const videoElement =  playerNode.querySelector('video');
     console.log('### videoElement:', videoElement);
     const mediaStream = videoElement.captureStream();
-
-    var modalVideoPlayer = modalPlayer.tech().el();
+    const modalVideoPlayer = modalPlayer.tech().el();
     modalVideoPlayer.srcObject = null;
     modalVideoPlayer.srcObject = mediaStream;
   }
@@ -223,9 +178,7 @@ function App() {
 
   const maximizeVideo = event => {
     mirrorModalPlayer();
-    setTimeout(() => {
-      setModalOpen(true);
-    })
+    setModalOpen(true);
   }
 
   const closeVideo = event => {
@@ -261,7 +214,7 @@ function App() {
     gotoLocation(cctvArray[0].cctvId);
   },[areas, cctvsInAreas, gotoLocation])
 
-  React.useState(()=>{
+  React.useEffect(()=>{
     if(location === null) return;
     console.log(`lat: ${location.getLat()}, lng: ${location.getLng()}, level: ${level}`);
   },[location, level])
@@ -317,7 +270,7 @@ function App() {
             setMap={setMap}
             setLocation={setLocation}
             setLevel={setLevel}
-            maxLevel={MAX_LEVEL}
+            maxLevel={MAX_MAP_LEVEL}
           ></KakaoMap>
           <AbsolutePositionBox
             width="auto"
@@ -348,6 +301,7 @@ function App() {
           </AbsolutePositionBox>
           {areas.map((area, areaIndex) => (
             <AbsolutePositionBox
+              key={area}
               width="auto"
               height="auto"
               top={30+areaIndex*45}
@@ -383,9 +337,8 @@ function App() {
               </TransparentPaper>
             </AbsolutePositionBox>
           ))}
-        <ModalBox ref={modalPlayerRef} open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
+        <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
           <HLSPlayer 
-            ref={modalPlayerRef}
             fill={true}
             responsive={true}
             setPlayer={setModalPlayer}
