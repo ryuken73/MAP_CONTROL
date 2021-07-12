@@ -26,6 +26,7 @@ import cctvImage from './assets/CCTV_Camera.png';
 const INI_LAT = '36.813556278060986';
 const INI_LNG = '127.54877209657853';
 const INI_LEVEL = 13;
+const DEFAULT_MAP_LEVEL = 11;
 const SHOW_ON_MAP = true;
 // const ENCRIPTED_URL_PROVIDER = 'http://localhost/encrypted';
 const {NODE_ENV} = process.env;
@@ -35,7 +36,15 @@ console.log(NODE_ENV)
 console.log(ENCRIPTED_URL_PROVIDER)
 const MAX_MAP_LEVEL = 13;
 
+const CENTER_OFFSET = {
+  8 : {lat:-0.03, lng:0.06},
+  9 : {lat:-0.07, lng:0.14},
+  10 : {lat:-0.12, lng:0.22},
+  11 : {lat:-0.25, lng:0.48},
+  12 : {lat:-0.37, lng:0.80},
+  13 : {lat:0, lng:0}
 
+}
 
 const {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} = require('./lib/mapUtil')()
 
@@ -135,7 +144,12 @@ function App() {
 
   const movePositionNSetLevelById = (map, cctvId) => {
     const cctv = cctvs.find(cctv => cctv.cctvId === cctvId);
-    const targetPosition = movePositionNSetLevel(map, cctv.lat, cctv.lng, cctv.mapLevel);
+    const mapLevel = cctv.mapLevel === undefined ? DEFAULT_MAP_LEVEL : cctv.mapLevel;
+    const modifiedLat = cctv.lat + CENTER_OFFSET[mapLevel].lat;
+    const modifiedLng = cctv.lng + CENTER_OFFSET[mapLevel].lng;
+    console.log('modified lat lng:', modifiedLat, modifiedLng, cctv.lat, cctv.lng)
+    movePositionNSetLevel(map, modifiedLat, modifiedLng, mapLevel);
+    const targetPosition = getPosition(cctv.lat, cctv.lng);
     return targetPosition;
   }
 
