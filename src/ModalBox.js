@@ -4,6 +4,7 @@ import Box from '@material-ui/core/Box'
 import { makeStyles } from '@material-ui/core/styles';
 import Fade from '@material-ui/core/Fade';
 import Zoom from '@material-ui/core/Zoom';
+import Grow from '@material-ui/core/Grow';
 
 const useStyles = makeStyles((theme) => ({
   paper: props => ({
@@ -36,7 +37,7 @@ function SimpleModal(props) {
         aria-describedby="simple-modal-description"
         {...props}
       >
-        <Zoom in={open} timeout={500}>
+        <Grow in={open} timeout={1500}>
         {/* <Fade in={open} timeout={300}>  */}
           <Box onClick={handleClose} display="flex" height="100%">
             <Box className={classes.paper}>
@@ -44,10 +45,10 @@ function SimpleModal(props) {
             </Box>
           </Box>
         {/* </Fade> */}
-        </Zoom>
+        </Grow>
       </Modal>
     </Box>
   );
 }
 
-export default SimpleModal;
+export default React.memo(SimpleModal);
