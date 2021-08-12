@@ -37,7 +37,8 @@ function SimpleModal(props) {
         aria-describedby="simple-modal-description"
         {...props}
       >
-        <Grow in={open} timeout={1500}>
+        <Zoom in={open} timeout={500}>
+        {/* <Grow in={open} timeout={1500}> */}
         {/* <Fade in={open} timeout={300}>  */}
           <Box onClick={handleClose} display="flex" height="100%">
             <Box className={classes.paper}>
@@ -45,7 +46,8 @@ function SimpleModal(props) {
             </Box>
           </Box>
         {/* </Fade> */}
-        </Grow>
+        {/* </Grow> */}
+        </Zoom>
       </Modal>
     </Box>
   );
