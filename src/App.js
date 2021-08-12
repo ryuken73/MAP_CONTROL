@@ -210,6 +210,14 @@ function App() {
     })
     setCurrentArea(currentArea);
   }
+  
+  const onClickInit = React.useCallback(() => {
+    if(map === null) return;
+    setLocationDisplay(locationDisplay.fill('none'))
+    setCurrentArea('');
+    closeVideo();
+    movePositionNSetLevel(map, INI_LAT, INI_LNG, INI_LEVEL)
+  },[map, currentOverlay])
 
   const onClickArea = React.useCallback(event => {
     const currentArea = typeof(event) === 'string' ? event : event.target.innerText;
@@ -290,6 +298,18 @@ function App() {
             width="auto"
           >
             <TransparentPaper>
+              <SmallButton
+                style={{display:'block'}}
+                fontsize="15px"
+                mt="15px"
+                width="80px"
+                onClick={onClickInit}
+                bgcolor={grey[700]}
+                // activeColor={grey[900]}
+                hoverColor={grey[600]} 
+              >
+                초기화
+              </SmallButton>
               {areas.length > 0 && areas.map((area, index) => (
                 <SimpleSlide 
                   key={area}
@@ -318,7 +338,7 @@ function App() {
               key={area}
               width="auto"
               height="auto"
-              top={30+areaIndex*45}
+              top={75+areaIndex*45}
               left="100px"
               // display={locationDisplay[areaIndex]}
             >
