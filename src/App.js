@@ -319,7 +319,7 @@ function App() {
                   <SmallButton
                     style={{display:'block'}}
                     fontsize="15px"
-                    mt="15px"
+                    mt="5px"
                     width="80px"
                     onClick={onClickArea}
                     bgcolor={currentArea !== area ? grey[400]:grey[900]}
@@ -338,7 +338,7 @@ function App() {
               key={area}
               width="auto"
               height="auto"
-              top={75+areaIndex*45}
+              top={65+areaIndex*35}
               left="100px"
               // display={locationDisplay[areaIndex]}
             >
