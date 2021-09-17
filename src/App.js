@@ -42,9 +42,12 @@ const CENTER_OFFSET = {
   10 : {lat:-0.12, lng:0.22},
   11 : {lat:-0.25, lng:0.48},
   12 : {lat:-0.37, lng:0.80},
-  13 : {lat:0, lng:0}
-
+  13 : {lat:0, lng:0},
+  99: {lat:0.08, lng:0.80} // for jeju
 }
+
+const CCTV_ID_JEJU = 9982;
+const isJeju = cctvId => cctvId === CCTV_ID_JEJU;
 
 const {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} = require('./lib/mapUtil')()
 
@@ -145,8 +148,9 @@ function App() {
   const movePositionNSetLevelById = (map, cctvId) => {
     const cctv = cctvs.find(cctv => cctv.cctvId === cctvId);
     const mapLevel = cctv.mapLevel === undefined ? DEFAULT_MAP_LEVEL : cctv.mapLevel;
-    const modifiedLat = cctv.lat + CENTER_OFFSET[mapLevel].lat;
-    const modifiedLng = cctv.lng + CENTER_OFFSET[mapLevel].lng;
+    const centerOffset =  isJeju(cctv.cctvId) ? CENTER_OFFSET[99] : CENTER_OFFSET[mapLevel];
+    const modifiedLat = cctv.lat + centerOffset.lat;
+    const modifiedLng = cctv.lng + centerOffset.lng;
     console.log('modified lat lng:', modifiedLat, modifiedLng, cctv.lat, cctv.lng)
     movePositionNSetLevel(map, modifiedLat, modifiedLng, mapLevel);
     const targetPosition = getPosition(cctv.lat, cctv.lng);
