@@ -1,75 +1,42 @@
 import React from 'react';
 import './App.css';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
 import Loading from './Loading';
 import KakaoMap from './KakaoMap';
 import HLSPlayer from './HLSPlayer';
 import ModalBox from './ModalBox';
+import SmallPlayer from './SmallPlayer';
+import LeftMenu from './LeftMenu';
 import cctvs from './sources';
 import axios from 'axios';
-import FullscreenIcon from '@material-ui/icons/Fullscreen';
-import CloseIcon from '@material-ui/icons/Close';
-import styled from 'styled-components';
-import {SmallButton, SmallPaddingIconButton} from './template/smallComponents';
+import {SmallButton} from './template/smallComponents';
 import {AbsolutePositionBox, TransparentPaper} from './template/basicComponents';
 import SimpleSlide from './SimpleSlide';
-import deepPurple from '@material-ui/core/colors/deepPurple';
-import blueGrey from '@material-ui/core/colors/blueGrey';
-import brown from '@material-ui/core/colors/brown';
-import grey from '@material-ui/core/colors/grey';
-import teal from '@material-ui/core/colors/teal';
-import cyan from '@material-ui/core/colors/cyan';
 import cctvImage from './assets/CCTV_Camera.png';
+import colors from './lib/colors';
+import {setUniqAreasFromSources, groupCCTVsByArea} from './lib/sourceUtil';
+import {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} from './lib/mapUtil';
 
-const INI_LAT = '36.813556278060986';
-const INI_LNG = '127.54877209657853';
-const INI_LEVEL = 13;
-const DEFAULT_MAP_LEVEL = 11;
-const SHOW_ON_MAP = true;
-// const ENCRIPTED_URL_PROVIDER = 'http://localhost/encrypted';
-const {NODE_ENV} = process.env;
 
-const ENCRIPTED_URL_PROVIDER = process.env.REACT_APP_ENCRIPTED_URL_PROVIDER;
-console.log(NODE_ENV)
-console.log(ENCRIPTED_URL_PROVIDER)
-const MAX_MAP_LEVEL = 13;
+import CONSTANTS from './constants';
+const { grey } = colors;
 
-const CENTER_OFFSET = {
-  8 : {lat:-0.03, lng:0.06},
-  9 : {lat:-0.07, lng:0.14},
-  10 : {lat:-0.12, lng:0.22},
-  11 : {lat:-0.25, lng:0.48},
-  12 : {lat:-0.37, lng:0.80},
-  13 : {lat:0, lng:0},
-  99: {lat:0.08, lng:0.80} // for jeju
-}
+const {
+  INI_LAT,
+  INI_LNG,
+  INI_LEVEL,
+  DEFAULT_MAP_LEVEL,
+  SHOW_ON_MAP,
+  MAX_MAP_LEVEL,
+  CENTER_OFFSET
+} = CONSTANTS;
+
+console.log(CONSTANTS)
 
 const CCTV_ID_JEJU = 9982;
 const isJeju = cctvId => cctvId === CCTV_ID_JEJU;
 
-const {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} = require('./lib/mapUtil')()
-
-const setUniqAreasFromSources = (cctvs, setFunction) => {
-  const areasOnly = cctvs.map(cctv => {
-      return cctv.title.split(' ')[0]
-  })
-  const uniqAreas = [...new Set(areasOnly)];
-  setFunction(uniqAreas);
-  return uniqAreas;
-}
-
-const groupCCTVsByArea = (uniqAreas, cctvs, setFunction) => {
-  const grouped = new Map();
-  uniqAreas.forEach(area => {
-    const cctvsInArea = cctvs.filter(cctv => {
-      return cctv.title.startsWith(area);
-    })
-    grouped.set(area, cctvsInArea);
-  })
-  setFunction(grouped);
-}
+const ENCRIPTED_URL_PROVIDER = process.env.REACT_APP_ENCRIPTED_URL_PROVIDER;
 
 function App() {
   const [map, setMap] = React.useState(null);
@@ -260,36 +227,13 @@ function App() {
           </Box>
         </Box> */}
         <div ref={playerRef} style={{display: playerDisplay, padding:"3px", borderColor:"black", border:"solid 1px black", background:'white'}}>
-          <Box display="flex" p="5px" color="white" fontSize="18px" bgcolor="black" minWidth="350px">
-            <Box mr="auto">
-              <SmallPaddingIconButton>
-                <CloseIcon
-                  fontSize="default"
-                  style={{color:"grey"}}
-                  onClick={closeVideo}
-                ></CloseIcon>
-              </SmallPaddingIconButton>
-            </Box>
-            <Box m="auto" width="100%">
-              {currentTitle}
-            </Box>
-            <Box ml="auto">
-              <SmallPaddingIconButton>
-                <FullscreenIcon
-                  fontSize="default"
-                  style={{color:"grey"}}
-                  onClick={maximizeVideo}
-                ></FullscreenIcon>
-              </SmallPaddingIconButton>
-            </Box>
-          </Box>
-          <HLSPlayer 
-            width={350}
-            height={200}
-            fluid={false}
-            source={playerSource}
+          <SmallPlayer
+            currentTitle={currentTitle}
+            playerSource={playerSource}
+            closeVideo={closeVideo}
+            maximizeVideo={maximizeVideo}
             setPlayer={setPlayer}
-          ></HLSPlayer>
+          />
         </div>
         <Box width="100%" height="100%">
           <KakaoMap
@@ -298,91 +242,24 @@ function App() {
             setLevel={setLevel}
             maxLevel={MAX_MAP_LEVEL}
           ></KakaoMap>
-          <AbsolutePositionBox
-            width="auto"
-          >
-            <TransparentPaper>
-              <SmallButton
-                style={{display:'block'}}
-                fontsize="15px"
-                mt="15px"
-                width="80px"
-                onClick={onClickInit}
-                bgcolor={grey[700]}
-                // activeColor={grey[900]}
-                hoverColor={grey[600]} 
-              >
-                초기화
-              </SmallButton>
-              {areas.length > 0 && areas.map((area, index) => (
-                <SimpleSlide 
-                  key={area}
-                  transitionDelay={index*50}
-                  timeout={300}
-                >
-                  <SmallButton
-                    style={{display:'block'}}
-                    fontsize="15px"
-                    mt="5px"
-                    width="80px"
-                    onClick={onClickArea}
-                    bgcolor={currentArea !== area ? grey[400]:grey[900]}
-                    // activeColor={grey[900]}
-                    hoverColor={grey[600]} 
-                  >
-                    {area}
-                  </SmallButton>
-                </SimpleSlide>
-
-              ))}
-            </TransparentPaper>
-          </AbsolutePositionBox>
-          {areas.map((area, areaIndex) => (
-            <AbsolutePositionBox
-              key={area}
-              width="auto"
-              height="auto"
-              top={75+areaIndex*35}
-              left="100px"
-              // display={locationDisplay[areaIndex]}
-            >
-              <TransparentPaper>
-                {cctvsInAreas.get(area).length > 0 && cctvsInAreas.get(area).map((cctv,cctvIndex) => (
-                  <SimpleSlide
-                    key={cctv.id}
-                    transitionDelay={cctvIndex*50}
-                    show={locationDisplay[areaIndex]==='block'}
-                    timeout={300}
-                    mountOnEnter 
-                    unmountOnExit
-                  >
-                    <SmallButton
-                      key={cctv.cctvId}
-                      id={cctv.cctvId}
-                      style={{display:'block'}}
-                      fontsize="15px"
-                      mt="5px"
-                      width="auto"
-                      onClick={gotoLocation}
-                      hoverColor={grey[600]}
-                      activeColor={grey[900]}
-                      bgcolor={cctv.cctvId === currentId ? grey[900]:grey[400]}
-                    >
-                      {cctv.title}  
-                    </SmallButton>
-                  </SimpleSlide>
-                ))}
-              </TransparentPaper>
-            </AbsolutePositionBox>
-          ))}
-        <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
-          <HLSPlayer 
-            fill={true}
-            responsive={true}
-            setPlayer={setModalPlayer}
-            aspectRatio={"16:9"}
-          ></HLSPlayer>
-        </ModalBox>
+          <LeftMenu
+            areas={areas}
+            currentArea={currentArea}
+            locationDisplay={locationDisplay}
+            currentId={currentId}
+            cctvsInAreas={cctvsInAreas}
+            onClickInit={onClickInit}
+            onClickArea={onClickArea}
+            gotoLocation={gotoLocation}
+          ></LeftMenu>
+          <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
+            <HLSPlayer 
+              fill={true}
+              responsive={true}
+              setPlayer={setModalPlayer}
+              aspectRatio={"16:9"}
+            ></HLSPlayer>
+          </ModalBox>
         </Box>
         <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>
       </header>
