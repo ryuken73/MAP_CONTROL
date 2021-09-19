@@ -342,7 +342,7 @@ function App() {
               key={area}
               width="auto"
               height="auto"
-              top={65+areaIndex*35}
+              top={75+areaIndex*35}
               left="100px"
               // display={locationDisplay[areaIndex]}
             >
@@ -361,7 +361,7 @@ function App() {
                       id={cctv.cctvId}
                       style={{display:'block'}}
                       fontsize="15px"
-                      mt="15px"
+                      mt="5px"
                       width="auto"
                       onClick={gotoLocation}
                       hoverColor={grey[600]}
