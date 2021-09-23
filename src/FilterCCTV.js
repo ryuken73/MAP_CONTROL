@@ -138,7 +138,7 @@ const FilterCCTV = props => {
                 <DialogTitle id="scroll-dialog-title">
                     {optionTitle}
                 </DialogTitle>
-                <DialogContent dividers={scroll === 'paper'}>
+                {/* <DialogContent dividers={scroll === 'paper'}> */}
                     <DialogContentText
                         id="scroll-dialog-description"
                         tabIndex={-1}
@@ -154,7 +154,7 @@ const FilterCCTV = props => {
                             ))}
                         </Box>
                     </DialogContentText>
-                </DialogContent>
+                {/* </DialogContent> */}
             </Dialog>
         </DragDropContext>
     )
