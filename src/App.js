@@ -16,7 +16,7 @@ import cctvImage from './assets/CCTV_Camera.png';
 import colors from './lib/colors';
 import {setUniqAreasFromSources, groupCCTVsByArea} from './lib/sourceUtil';
 import {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} from './lib/mapUtil';
-
+import FilterCCTV from './FilterCCTV';
 
 import CONSTANTS from './constants';
 const { grey } = colors;
@@ -55,9 +55,11 @@ function App() {
   const [cctvsInAreas, setCCTVsInAreas] = React.useState(new Map());
   const [locationDisplay, setLocationDisplay] = React.useState([]);
   const [currentArea, setCurrentArea] = React.useState([]);
+  const [filterOpen, setFilterOpen] = React.useState(false);
 
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
+  const cctvListRef = React.useRef([]);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   // get hls urls for individual cctvs
@@ -85,6 +87,11 @@ function App() {
       setUrls(cctvsWithUrls)
     })
   },[])
+
+  React.useEffect(() => {
+    const cctvArray = [...cctvsInAreas.values()] || [];
+    cctvListRef.current = cctvArray.flat();
+  }, [cctvsInAreas])
 
   const markerClickHandler = (cctvId, urls) => {
     return () => {
@@ -181,6 +188,10 @@ function App() {
     })
     setCurrentArea(currentArea);
   }
+
+  const onDragEnd = result => {
+    // TODO: end drag.
+  }
   
   const onClickInit = React.useCallback(() => {
     if(map === null) return;
@@ -213,57 +224,66 @@ function App() {
   },[location, level])
 
   return (
-    <div className="App">
-      <header className="App-header">
-        {/* <Box display="flex" flexDirection="row" fontSize="15px">
-          <Box>
-            lat:{location ? location.getLat():0}
+    // <DragDropContext onDragEnd={onDragEnd}>
+      <div className="App">
+        <header className="App-header">
+          {/* <Box display="flex" flexDirection="row" fontSize="15px">
+            <Box>
+              lat:{location ? location.getLat():0}
+            </Box>
+            <Box ml="20px">
+              lng:{location ? location.getLng():0}
+            </Box>
+            <Box ml="20px">
+              level:{level ? level:"null"}
+            </Box>
+          </Box> */}
+          <div ref={playerRef} style={{display: playerDisplay, padding:"3px", borderColor:"black", border:"solid 1px black", background:'white'}}>
+            <SmallPlayer
+              currentTitle={currentTitle}
+              playerSource={playerSource}
+              closeVideo={closeVideo}
+              maximizeVideo={maximizeVideo}
+              setPlayer={setPlayer}
+            />
+          </div>
+          <Box width="100%" height="100%">
+            <KakaoMap
+              setMap={setMap}
+              setLocation={setLocation}
+              setLevel={setLevel}
+              maxLevel={MAX_MAP_LEVEL}
+            ></KakaoMap>
+            <LeftMenu
+              areas={areas}
+              currentArea={currentArea}
+              locationDisplay={locationDisplay}
+              currentId={currentId}
+              cctvsInAreas={cctvsInAreas}
+              onClickInit={onClickInit}
+              onClickArea={onClickArea}
+              gotoLocation={gotoLocation}
+              setFilterOpen={setFilterOpen}
+            ></LeftMenu>
+            <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
+              <HLSPlayer 
+                fill={true}
+                responsive={true}
+                setPlayer={setModalPlayer}
+                aspectRatio={"16:9"}
+              ></HLSPlayer>
+            </ModalBox>
           </Box>
-          <Box ml="20px">
-            lng:{location ? location.getLng():0}
-          </Box>
-          <Box ml="20px">
-            level:{level ? level:"null"}
-          </Box>
-        </Box> */}
-        <div ref={playerRef} style={{display: playerDisplay, padding:"3px", borderColor:"black", border:"solid 1px black", background:'white'}}>
-          <SmallPlayer
-            currentTitle={currentTitle}
-            playerSource={playerSource}
-            closeVideo={closeVideo}
-            maximizeVideo={maximizeVideo}
-            setPlayer={setPlayer}
-          />
-        </div>
-        <Box width="100%" height="100%">
-          <KakaoMap
-            setMap={setMap}
-            setLocation={setLocation}
-            setLevel={setLevel}
-            maxLevel={MAX_MAP_LEVEL}
-          ></KakaoMap>
-          <LeftMenu
-            areas={areas}
-            currentArea={currentArea}
-            locationDisplay={locationDisplay}
-            currentId={currentId}
-            cctvsInAreas={cctvsInAreas}
-            onClickInit={onClickInit}
-            onClickArea={onClickArea}
-            gotoLocation={gotoLocation}
-          ></LeftMenu>
-          <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
-            <HLSPlayer 
-              fill={true}
-              responsive={true}
-              setPlayer={setModalPlayer}
-              aspectRatio={"16:9"}
-            ></HLSPlayer>
-          </ModalBox>
-        </Box>
-        <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>
-      </header>
-    </div>
+          <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>
+          <FilterCCTV
+            filterOpen={filterOpen}
+            cctvListRef={cctvListRef}
+            setFilterOpen={setFilterOpen}
+          >
+          </FilterCCTV>
+        </header>
+      </div>
+    // </DragDropContext>
   );
 }
 

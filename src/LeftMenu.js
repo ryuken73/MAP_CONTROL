@@ -3,8 +3,21 @@ import {AbsolutePositionBox, TransparentPaper} from './template/basicComponents'
 import {SmallButton} from './template/smallComponents';
 import SimpleSlide from './SimpleSlide';
 import colors from './lib/colors';
+import IconButton from '@material-ui/core/IconButton';
+import FilterListIcon from '@material-ui/icons/FilterList';
+import styled from 'styled-components';
 
 const { grey } = colors;
+
+const BasicIconButton = styled(IconButton)`
+    padding: ${props => props.padding || "5px"};
+    background-color: ${grey[700]};
+    .MuiIconButton-label {
+        .MuiSvgIcon-root {
+            color: ${props => props.iconcolor || 'white'};
+        }
+    }
+`
 
 const LeftMenu = props => {
     const {
@@ -15,8 +28,13 @@ const LeftMenu = props => {
         cctvsInAreas=new Map(),
         onClickInit=()=>{},
         onClickArea=()=>{},
-        gotoLocation=()=>{}
+        gotoLocation=()=>{},
+        setFilterOpen=()=>{}
     } = props;
+
+    const openFilterModal = React.useCallback(() => {
+        setFilterOpen(true);
+    },[setFilterOpen])
 
     return (
         <>
@@ -24,6 +42,12 @@ const LeftMenu = props => {
             width="auto"
         >
             <TransparentPaper>
+                <BasicIconButton 
+                    aria-label="delete" 
+                    onClick={openFilterModal}
+                >
+                    <FilterListIcon fontSize="small" />
+                </BasicIconButton>
                 <SmallButton
                     style={{display:'block'}}
                     fontsize="15px"
@@ -63,7 +87,7 @@ const LeftMenu = props => {
             key={area}
             width="auto"
             height="auto"
-            top={75+areaIndex*35}
+            top={107+areaIndex*35}
             left="100px"
             // display={locationDisplay[areaIndex]}
             >
