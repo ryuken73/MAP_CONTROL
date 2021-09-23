@@ -22,7 +22,6 @@ const CCTVList = styled.div`
     transition: background-color 0.2s ease;
     background-color: ${props => (props.isDraggingOver ? 'skyblue' : 'white')};
     flex-grow: 1;
-    height: 100%    
 `
 
 const Column = props => {

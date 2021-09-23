@@ -3,7 +3,7 @@ import Box from '@material-ui/core/Box';
 import styled from 'styled-components';
 import { Draggable } from 'react-beautiful-dnd';
 
-const Container = styled(Box)`
+const Container = styled.div`
     border: 1px solid;
     margin: 3px;
     padding: 3px;
