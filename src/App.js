@@ -38,6 +38,50 @@ const isJeju = cctvId => cctvId === CCTV_ID_JEJU;
 
 const ENCRIPTED_URL_PROVIDER = process.env.REACT_APP_ENCRIPTED_URL_PROVIDER;
 
+const getUrlJob = cctvs => {
+  return cctvs.map(async cctv => {
+            try {
+              const {cctvId} = cctv;
+              const response = await axios.get(ENCRIPTED_URL_PROVIDER,{params:{cctvId}});
+              return {...cctv, url:response.data.url}
+            } catch(err){
+              return false;
+            }
+          })
+} 
+
+const movePositionNSetLevelById = (cctvs, map, cctvId) => {
+  const cctv = cctvs.find(cctv => cctv.cctvId === cctvId);
+  const mapLevel = cctv.mapLevel === undefined ? DEFAULT_MAP_LEVEL : cctv.mapLevel;
+  const centerOffset =  isJeju(cctv.cctvId) ? CENTER_OFFSET[99] : CENTER_OFFSET[mapLevel];
+  const modifiedLat = cctv.lat + centerOffset.lat;
+  const modifiedLng = cctv.lng + centerOffset.lng;
+  console.log('modified lat lng:', modifiedLat, modifiedLng, cctv.lat, cctv.lng)
+  movePositionNSetLevel(map, modifiedLat, modifiedLng, mapLevel);
+  const targetPosition = getPosition(cctv.lat, cctv.lng);
+  return targetPosition;
+}
+
+const mirrorModalPlayer = (playerNode, modalPlayer) => {
+  const videoElement =  playerNode.querySelector('video');
+  console.log('### videoElement:', videoElement);
+  const mediaStream = videoElement.captureStream();
+  const modalVideoPlayer = modalPlayer.tech().el();
+  modalVideoPlayer.srcObject = null;
+  modalVideoPlayer.srcObject = mediaStream;
+}
+
+const showCurrentLocation = (currentAreaIndex, setLocationDisplay) => {
+    setLocationDisplay(locationDisplay => {
+      const newLocationDisplay = [...locationDisplay]
+      const ALREADY_SHOWN = newLocationDisplay[currentAreaIndex] === 'block';
+      if(ALREADY_SHOWN) return newLocationDisplay;
+      newLocationDisplay.fill('none');
+      newLocationDisplay[currentAreaIndex] = 'block'
+      return newLocationDisplay
+  })
+}
+
 function App() {
   const [map, setMap] = React.useState(null);
   const [location, setLocation] = React.useState(null);
@@ -65,20 +109,7 @@ function App() {
   // get hls urls for individual cctvs
   React.useEffect(() => {
     setLoadingOpen(true);
-    const uniqAreas = setUniqAreasFromSources(cctvs, setAreas);
-    const locationDisplay = new Array(uniqAreas.length);
-    setLocationDisplay(locationDisplay.fill('none'))
-    groupCCTVsByArea(uniqAreas, cctvs, setCCTVsInAreas);
-    const getUrlJob = cctvs.map(async cctv => {
-      try {
-        const {cctvId} = cctv;
-        const response = await axios.get(ENCRIPTED_URL_PROVIDER,{params:{cctvId}});
-        return {...cctv, url:response.data.url}
-      } catch(err){
-        return false;
-      }
-    })
-    Promise.all(getUrlJob)
+    Promise.all(getUrlJob(cctvs))
     .then(cctvsWithUrls => {
       setLoadingOpen(false)
       if(cctvsWithUrls.some(url => url === false)){
@@ -89,22 +120,13 @@ function App() {
   },[])
 
   React.useEffect(() => {
+    const uniqAreas = setUniqAreasFromSources(cctvs, setAreas);
+    const locationDisplay = new Array(uniqAreas.length);
+    setLocationDisplay(locationDisplay.fill('none'))
+    const cctvsInAreas = groupCCTVsByArea(uniqAreas, cctvs, setCCTVsInAreas);
     const cctvArray = [...cctvsInAreas.values()] || [];
     cctvListRef.current = cctvArray.flat();
-  }, [cctvsInAreas])
-
-  const markerClickHandler = (cctvId, urls) => {
-    return () => {
-      setCurrentId(cctvId);
-      const cctv = cctvs.find(cctv => cctv.cctvId === cctvId);
-      const cctvArea = cctv.title.split(' ')[0]
-      setCurrentArea(cctvArea);
-      selectArea(cctvArea);
-      setPlayerDisplay('none');
-      const targetPosition = movePositionNSetLevelById(map, cctvId);
-      showSmallPlayerById(map, cctvId, urls, targetPosition, playerRef);
-    }
-  }
+  },[])
 
   React.useEffect(() => {
     if(map === null) return;
@@ -114,78 +136,65 @@ function App() {
     cctvs.forEach(cctv => {
       const targetPosition = getPosition(cctv.lat, cctv.lng);
       const marker = showMarker(map, markerImage, targetPosition);
-      window.kakao.maps.event.addListener(marker, 'click', markerClickHandler(cctv.cctvId, urls))
+      window.kakao.maps.event.addListener(marker, 'click', onClickMarker(cctv.cctvId, urls))
     })
     movePositionNSetLevel(map, INI_LAT, INI_LNG, INI_LEVEL)
   },[map, urls])
 
-  const movePositionNSetLevelById = (map, cctvId) => {
-    const cctv = cctvs.find(cctv => cctv.cctvId === cctvId);
-    const mapLevel = cctv.mapLevel === undefined ? DEFAULT_MAP_LEVEL : cctv.mapLevel;
-    const centerOffset =  isJeju(cctv.cctvId) ? CENTER_OFFSET[99] : CENTER_OFFSET[mapLevel];
-    const modifiedLat = cctv.lat + centerOffset.lat;
-    const modifiedLng = cctv.lng + centerOffset.lng;
-    console.log('modified lat lng:', modifiedLat, modifiedLng, cctv.lat, cctv.lng)
-    movePositionNSetLevel(map, modifiedLat, modifiedLng, mapLevel);
-    const targetPosition = getPosition(cctv.lat, cctv.lng);
-    return targetPosition;
+  const onClickMarker = (cctvId, urls) => {
+    return () => {
+      setCurrentId(cctvId);
+      setPlayerDisplay('none');
+      const targetPosition = movePositionNSetLevelById(cctvs, map, cctvId);
+      showSmallPlayerById(map, cctvId, urls, targetPosition, playerRef);
+      const cctv = cctvs.find(cctv => cctv.cctvId === cctvId);
+      const cctvArea = cctv.title.split(' ')[0]
+      setCurrentArea(cctvArea);
+      cctvSlideOpen(cctvArea);
+    }
   }
 
   const showSmallPlayerById = (map, cctvId, urls, targetPosition, playerRef) => {
     console.log('### urls:', urls)
     const playerNode = playerRef.current;
     const currentOverlay = showOverlay(map, targetPosition, playerNode);
+
     const cctvWithUrl = urls.find(url => url.cctvId === cctvId )
-    setPlayerSource({url: 'none'})
+    // setPlayerSource({url: 'none'})
 
     cctvWithUrl && setTimeout(() => {
-      setPlayerDisplay('block');
       setPlayerSource({url: cctvWithUrl.url});
-      // mirrorModalPlayer();
-    },500)
+      setPlayerDisplay('block');
+    },1) 
     setCurrentOverlay(currentOverlay);
   }
 
-  const mirrorModalPlayer = () => {
-    const playerNode = playerRef.current;
-    const videoElement =  playerNode.querySelector('video');
-    console.log('### videoElement:', videoElement);
-    const mediaStream = videoElement.captureStream();
-    const modalVideoPlayer = modalPlayer.tech().el();
-    modalVideoPlayer.srcObject = null;
-    modalVideoPlayer.srcObject = mediaStream;
-  }
-
-  const gotoLocation = React.useCallback(event => {
+  const onClickCCTVinMenu = React.useCallback(event => {
     console.log('goLocation:', event, typeof(event))
     const cctvId = typeof(event) === 'number' ? event : event.target.id || event.target.parentElement.id;
     const cctvIdNum = parseInt(cctvId);
     setCurrentId(cctvIdNum);
     setPlayerDisplay('none');
-    const targetPosition = movePositionNSetLevelById(map, cctvIdNum)
+    const targetPosition = movePositionNSetLevelById(cctvs, map, cctvIdNum)
     if(!SHOW_ON_MAP) return;
     console.log('### urls:', urls)
     showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef);
   },[map, urls])
 
-  const maximizeVideo = event => {
-    mirrorModalPlayer();
+  const maximizeVideo = React.useCallback(event => {
+    const playerNode = playerRef.current;
+    mirrorModalPlayer(playerNode, modalPlayer);
     setModalOpen(true);
-  }
+  },[playerRef, modalPlayer])
 
   const closeVideo = event => {
     currentOverlay.setMap(null);
     setPlayerDisplay('none');
   }
 
-  const selectArea = currentArea => {
+  const cctvSlideOpen = currentArea => {
     const currentAreaIndex = areas.findIndex(area => area === currentArea);
-    setLocationDisplay(locationDisplay => {
-      const newLocationDisplay = [...locationDisplay]
-      newLocationDisplay.fill('none');
-      newLocationDisplay[currentAreaIndex] = 'block'
-      return newLocationDisplay
-    })
+    showCurrentLocation(currentAreaIndex, setLocationDisplay);
     setCurrentArea(currentArea);
   }
 
@@ -205,18 +214,11 @@ function App() {
     const currentArea = typeof(event) === 'string' ? event : event.target.innerText;
     const currentAreaIndex = areas.findIndex(area => area === currentArea);
     console.log(currentAreaIndex)
-    setLocationDisplay(locationDisplay => {
-      const newLocationDisplay = [...locationDisplay]
-      const ALREADY_SHOWN = newLocationDisplay[currentAreaIndex] === 'block';
-      newLocationDisplay.fill('none');
-      if(ALREADY_SHOWN) return newLocationDisplay;
-      newLocationDisplay[currentAreaIndex] = 'block'
-      return newLocationDisplay
-    })
+    showCurrentLocation(currentAreaIndex, setLocationDisplay);
     setCurrentArea(currentArea);
     const cctvArray = cctvsInAreas.get(currentArea);
-    gotoLocation(cctvArray[0].cctvId);
-  },[areas, cctvsInAreas, gotoLocation])
+    onClickCCTVinMenu(cctvArray[0].cctvId);
+  },[areas, cctvsInAreas, onClickCCTVinMenu])
 
   React.useEffect(()=>{
     if(location === null) return;
@@ -262,7 +264,7 @@ function App() {
               cctvsInAreas={cctvsInAreas}
               onClickInit={onClickInit}
               onClickArea={onClickArea}
-              gotoLocation={gotoLocation}
+              onClickCCTVinMenu={onClickCCTVinMenu}
               setFilterOpen={setFilterOpen}
             ></LeftMenu>
             <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">

@@ -28,7 +28,7 @@ const LeftMenu = props => {
         cctvsInAreas=new Map(),
         onClickInit=()=>{},
         onClickArea=()=>{},
-        gotoLocation=()=>{},
+        onClickCCTVinMenu=()=>{},
         setFilterOpen=()=>{}
     } = props;
 
@@ -108,7 +108,7 @@ const LeftMenu = props => {
                         fontsize="15px"
                         mt="5px"
                         width="auto"
-                        onClick={gotoLocation}
+                        onClick={onClickCCTVinMenu}
                         hoverColor={grey[600]}
                         activeColor={grey[900]}
                         bgcolor={cctv.cctvId === currentId ? grey[900]:grey[400]}

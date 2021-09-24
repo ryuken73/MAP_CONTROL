@@ -16,5 +16,6 @@ export const groupCCTVsByArea = (uniqAreas, cctvs, setFunction) => {
         grouped.set(area, cctvsInArea);
     })
     setFunction(grouped);
+    return grouped;
 }
     

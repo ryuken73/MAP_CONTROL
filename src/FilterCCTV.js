@@ -29,7 +29,6 @@ const INITIAL_COLUMN_DATA = {
     }
 }
 
-
 const INITIAL_COLUMN_ORDER = ['dragFrom', 'dropOn'];
 
 const getDropOnCCTVs = () => [];
