@@ -17,7 +17,7 @@ const Container = styled.div`
     border-radius: 3px;
 `
 
-const getDropOnCCTVs = () => [];
+// const getDropOnCCTVs = () => [];
 const getDragFromCCTVs = (cctvIds, cctvsIdDropOn) => {
     return cctvIds.filter(cctvId => !(cctvsIdDropOn.includes(cctvId)) )
 };
@@ -31,27 +31,28 @@ const FilterCCTV = props => {
         columnData={},
         columnOrder=[],
         setColumnData=()=>{},
+        // cctvsInDropOn=[]
     } = props;
 
     // const cctvs = cctvListRef.current;
-    const cctvIds = cctvs.map(cctv => cctv.cctvId)
+    // const cctvIds = cctvs.map(cctv => cctv.cctvId)
     // const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
     // const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
 
-    React.useEffect(() => {
-        const cctvsInDropOn = getDropOnCCTVs();
-        const cctvsInDragFrom = getDragFromCCTVs(cctvIds, cctvsInDropOn);
-        setColumnData({
-            'dragFrom': {
-                ...columnData.dragFrom,
-                cctvIds: cctvsInDragFrom
-            },
-            'dropOn': {
-                ...columnData.dropOn,
-                cctvIds: cctvsInDropOn
-            }
-        })
-    },[cctvs])
+    // React.useEffect(() => {
+    //     // const cctvsInDropOn = getDropOnCCTVs();
+    //     const cctvsInDragFrom = getDragFromCCTVs(cctvIds, cctvsInDropOn);
+    //     setColumnData({
+    //         'dragFrom': {
+    //             ...columnData.dragFrom,
+    //             cctvIds: cctvsInDragFrom
+    //         },
+    //         'dropOn': {
+    //             ...columnData.dropOn,
+    //             cctvIds: cctvsInDropOn
+    //         }
+    //     })
+    // },[])
 
     const onCloseFilterDialog = () => {
         setFilterOpen(false);

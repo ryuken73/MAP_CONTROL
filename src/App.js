@@ -14,10 +14,20 @@ import colors from './lib/colors';
 import {setUniqAreasFromSources, orderByArea, groupCCTVsByArea} from './lib/sourceUtil';
 import {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} from './lib/mapUtil';
 import FilterCCTV from './FilterCCTV';
+import {storage} from './lib/LocalStorage';
 
 import CONSTANTS from './constants';
 
 const cctvs = orderByArea(cctvsOriginal);
+
+const db = storage.open('localStorage');
+const LOCAL_STORAGE_KEY = 'SBS_CCTVS_SELECTED';
+const savedCCTVIds = db.get(LOCAL_STORAGE_KEY) || [];
+console.log(savedCCTVIds)
+const cctvIds = cctvs.map(cctv => cctv.cctvId)
+const cctvsInDragFrom = cctvIds.filter(cctvId => !(savedCCTVIds.includes(cctvId)) )
+
+
 
 const {
   INI_LAT,
@@ -35,12 +45,12 @@ const INITIAL_COLUMN_DATA = {
   'dragFrom': {
       id: 'dragFrom',
       title: 'Drag From',
-      cctvIds:[]
+      cctvIds:cctvsInDragFrom
   },
   'dropOn': {
       id: 'dropOn',
       title: 'Drop Here',
-      cctvIds:[]
+      cctvIds:savedCCTVIds
   }
 }
 
@@ -244,6 +254,11 @@ function App() {
     console.log(`lat: ${location.getLat()}, lng: ${location.getLng()}, level: ${level}`);
   },[location, level])
 
+  const setColumnDataNSave = React.useCallback((columnData) => {
+    db.set(LOCAL_STORAGE_KEY, columnData['dropOn'].cctvIds);
+    setColumnData(columnData);
+  },[])
+
   return (
     // <DragDropContext onDragEnd={onDragEnd}>
       <div className="App">
@@ -302,7 +317,8 @@ function App() {
             setFilterOpen={setFilterOpen}
             columnData={columnData}
             columnOrder={columnOrder}
-            setColumnData={setColumnData}
+            // setColumnData={setColumnData}
+            setColumnData={setColumnDataNSave}
           >
           </FilterCCTV>
         </header>
