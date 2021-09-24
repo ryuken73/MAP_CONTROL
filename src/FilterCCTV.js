@@ -137,7 +137,9 @@ const FilterCCTV = props => {
                                 <Column
                                     title={columnData[column].title}
                                     column={columnData[column]}
+                                    columnData={columnData}
                                     cctvs={cctvs}
+                                    setColumnData={setColumnData}
                                 >
                                 </Column>
                             ))}
