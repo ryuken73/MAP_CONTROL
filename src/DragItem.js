@@ -10,6 +10,7 @@ const Container = styled.div`
     background-color: ${props => (props.isDragging ? 'maroon' : 'grey')};
     color: white;
     border-radius: 3px;
+    font-size: 14px;
 `
 const DragItem = props => {
     const {cctv, index} = props;

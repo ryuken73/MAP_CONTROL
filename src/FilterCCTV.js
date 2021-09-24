@@ -16,20 +16,6 @@ const Container = styled.div`
     overflow: auto; 
     border-radius: 3px;
 `
-// const INITIAL_COLUMN_DATA = {
-//     'dragFrom': {
-//         id: 'dragFrom',
-//         title: 'Drag From',
-//         cctvIds:[]
-//     },
-//     'dropOn': {
-//         id: 'dropOn',
-//         title: 'Drop Here',
-//         cctvIds:[]
-//     }
-// }
-
-// const INITIAL_COLUMN_ORDER = ['dragFrom', 'dropOn'];
 
 const getDropOnCCTVs = () => [];
 const getDragFromCCTVs = (cctvIds, cctvsIdDropOn) => {
@@ -135,7 +121,7 @@ const FilterCCTV = props => {
                 aria-labelledby="scroll-dialog-title"
                 aria-describedby="scroll-dialog-description"
                 fullWidth
-                maxWidth="md"
+                maxWidth="sm"
             >
                 <DialogTitle id="scroll-dialog-title">
                     {optionTitle}

@@ -5,7 +5,7 @@ import DragItem from './DragItem';
 
 const Container = styled.div`
     height: 500px;
-    width: 40%;
+    width: 45%;
     border: 1px solid;
     overflow: auto; 
     border-radius: 3px;
