@@ -7,15 +7,17 @@ import HLSPlayer from './HLSPlayer';
 import ModalBox from './ModalBox';
 import SmallPlayer from './SmallPlayer';
 import LeftMenu from './LeftMenu';
-import cctvs from './sources';
+import cctvsOriginal from './sources';
 import axios from 'axios';
 import cctvImage from './assets/CCTV_Camera.png';
 import colors from './lib/colors';
-import {setUniqAreasFromSources, groupCCTVsByArea} from './lib/sourceUtil';
+import {setUniqAreasFromSources, orderByArea, groupCCTVsByArea} from './lib/sourceUtil';
 import {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} from './lib/mapUtil';
 import FilterCCTV from './FilterCCTV';
 
 import CONSTANTS from './constants';
+
+const cctvs = orderByArea(cctvsOriginal);
 
 const {
   INI_LAT,

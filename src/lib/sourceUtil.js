@@ -3,7 +3,7 @@ export const setUniqAreasFromSources = (cctvs, setFunction) => {
         return cctv.title.split(' ')[0]
     })
     const uniqAreas = [...new Set(areasOnly)];
-    setFunction(uniqAreas);
+    setFunction && setFunction(uniqAreas);
     return uniqAreas;
 }
       
@@ -15,7 +15,13 @@ export const groupCCTVsByArea = (uniqAreas, cctvs, setFunction) => {
         })
         grouped.set(area, cctvsInArea);
     })
-    setFunction(grouped);
+    setFunction && setFunction(grouped);
     return grouped;
 }
+
+export const orderByArea = cctvs => {
+    const uniqAreas = setUniqAreasFromSources(cctvs);
+    const orderedByAreaMap = groupCCTVsByArea(uniqAreas, cctvs);
+    return [...orderedByAreaMap.values()].flat();
+}  
     
