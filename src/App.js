@@ -9,9 +9,6 @@ import SmallPlayer from './SmallPlayer';
 import LeftMenu from './LeftMenu';
 import cctvs from './sources';
 import axios from 'axios';
-import {SmallButton} from './template/smallComponents';
-import {AbsolutePositionBox, TransparentPaper} from './template/basicComponents';
-import SimpleSlide from './SimpleSlide';
 import cctvImage from './assets/CCTV_Camera.png';
 import colors from './lib/colors';
 import {setUniqAreasFromSources, groupCCTVsByArea} from './lib/sourceUtil';
@@ -19,7 +16,6 @@ import {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetL
 import FilterCCTV from './FilterCCTV';
 
 import CONSTANTS from './constants';
-const { grey } = colors;
 
 const {
   INI_LAT,
@@ -32,6 +28,21 @@ const {
 } = CONSTANTS;
 
 console.log(CONSTANTS)
+
+const INITIAL_COLUMN_DATA = {
+  'dragFrom': {
+      id: 'dragFrom',
+      title: 'Drag From',
+      cctvIds:[]
+  },
+  'dropOn': {
+      id: 'dropOn',
+      title: 'Drop Here',
+      cctvIds:[]
+  }
+}
+
+const INITIAL_COLUMN_ORDER = ['dragFrom', 'dropOn'];
 
 const CCTV_ID_JEJU = 9982;
 const isJeju = cctvId => cctvId === CCTV_ID_JEJU;
@@ -100,10 +111,13 @@ function App() {
   const [locationDisplay, setLocationDisplay] = React.useState([]);
   const [currentArea, setCurrentArea] = React.useState([]);
   const [filterOpen, setFilterOpen] = React.useState(false);
+  const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
+  const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
+
 
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
-  const cctvListRef = React.useRef([]);
+  // const cctvListRef = React.useRef([]);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
   // get hls urls for individual cctvs
@@ -119,14 +133,22 @@ function App() {
     })
   },[])
 
+  // React.useEffect(() => {
+  //   const uniqAreas = setUniqAreasFromSources(cctvs, setAreas);
+  //   const locationDisplay = new Array(uniqAreas.length);
+  //   setLocationDisplay(locationDisplay.fill('none'))
+  //   groupCCTVsByArea(uniqAreas, cctvs, setCCTVsInAreas);
+  // },[])
+
   React.useEffect(() => {
-    const uniqAreas = setUniqAreasFromSources(cctvs, setAreas);
+    const cctvIdsSelected = columnData['dropOn'].cctvIds;
+    // const cctvsSelected = cctvs.filter(cctv => cctvIdsSelected.includes(cctv.cctvId));
+    const cctvsSelected = cctvIdsSelected.map(cctvId => cctvs.find(cctv => cctv.cctvId === cctvId));
+    const uniqAreas = setUniqAreasFromSources(cctvsSelected, setAreas);
     const locationDisplay = new Array(uniqAreas.length);
     setLocationDisplay(locationDisplay.fill('none'))
-    const cctvsInAreas = groupCCTVsByArea(uniqAreas, cctvs, setCCTVsInAreas);
-    const cctvArray = [...cctvsInAreas.values()] || [];
-    cctvListRef.current = cctvArray.flat();
-  },[])
+    groupCCTVsByArea(uniqAreas, cctvsSelected, setCCTVsInAreas);
+  },[columnData])
 
   React.useEffect(() => {
     if(map === null) return;
@@ -177,7 +199,6 @@ function App() {
     setPlayerDisplay('none');
     const targetPosition = movePositionNSetLevelById(cctvs, map, cctvIdNum)
     if(!SHOW_ON_MAP) return;
-    console.log('### urls:', urls)
     showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef);
   },[map, urls])
 
@@ -188,7 +209,7 @@ function App() {
   },[playerRef, modalPlayer])
 
   const closeVideo = event => {
-    currentOverlay.setMap(null);
+    currentOverlay !== null && currentOverlay.setMap(null);
     setPlayerDisplay('none');
   }
 
@@ -196,10 +217,6 @@ function App() {
     const currentAreaIndex = areas.findIndex(area => area === currentArea);
     showCurrentLocation(currentAreaIndex, setLocationDisplay);
     setCurrentArea(currentArea);
-  }
-
-  const onDragEnd = result => {
-    // TODO: end drag.
   }
   
   const onClickInit = React.useCallback(() => {
@@ -279,8 +296,11 @@ function App() {
           <Loading open={loadingOpen} setOpen={setLoadingOpen}></Loading>
           <FilterCCTV
             filterOpen={filterOpen}
-            cctvListRef={cctvListRef}
+            cctvs={cctvs}
             setFilterOpen={setFilterOpen}
+            columnData={columnData}
+            columnOrder={columnOrder}
+            setColumnData={setColumnData}
           >
           </FilterCCTV>
         </header>

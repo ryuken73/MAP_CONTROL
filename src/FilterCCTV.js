@@ -16,20 +16,20 @@ const Container = styled.div`
     overflow: auto; 
     border-radius: 3px;
 `
-const INITIAL_COLUMN_DATA = {
-    'dragFrom': {
-        id: 'dragFrom',
-        title: 'Drag From',
-        cctvIds:[]
-    },
-    'dropOn': {
-        id: 'dropOn',
-        title: 'Drop Here',
-        cctvIds:[]
-    }
-}
+// const INITIAL_COLUMN_DATA = {
+//     'dragFrom': {
+//         id: 'dragFrom',
+//         title: 'Drag From',
+//         cctvIds:[]
+//     },
+//     'dropOn': {
+//         id: 'dropOn',
+//         title: 'Drop Here',
+//         cctvIds:[]
+//     }
+// }
 
-const INITIAL_COLUMN_ORDER = ['dragFrom', 'dropOn'];
+// const INITIAL_COLUMN_ORDER = ['dragFrom', 'dropOn'];
 
 const getDropOnCCTVs = () => [];
 const getDragFromCCTVs = (cctvIds, cctvsIdDropOn) => {
@@ -39,15 +39,18 @@ const scroll = 'paper';
 const FilterCCTV = props => {
     const {
         filterOpen=false,
-        cctvListRef=[],
+        cctvs=[],
         optionTitle="Filter CCTVs",
-        setFilterOpen=()=>{}
+        setFilterOpen=()=>{},
+        columnData={},
+        columnOrder=[],
+        setColumnData=()=>{},
     } = props;
 
-    const cctvs = cctvListRef.current;
+    // const cctvs = cctvListRef.current;
     const cctvIds = cctvs.map(cctv => cctv.cctvId)
-    const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
-    const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
+    // const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
+    // const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
 
     React.useEffect(() => {
         const cctvsInDropOn = getDropOnCCTVs();
