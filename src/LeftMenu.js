@@ -3,14 +3,17 @@ import {AbsolutePositionBox, TransparentPaper} from './template/basicComponents'
 import {SmallButton} from './template/smallComponents';
 import SimpleSlide from './SimpleSlide';
 import colors from './lib/colors';
+import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import styled from 'styled-components';
+import SettingsApplicationsIcon from '@material-ui/icons/SettingsApplications';
+import SettingsIcon from '@material-ui/icons/Settings';
 
 const { grey } = colors;
 
 const BasicIconButton = styled(IconButton)`
-    padding: ${props => props.padding || "5px"};
+    padding: ${props => props.padding || "2px"};
     background-color: ${grey[700]};
     .MuiIconButton-label {
         .MuiSvgIcon-root {
@@ -29,7 +32,8 @@ const LeftMenu = props => {
         onClickInit=()=>{},
         onClickArea=()=>{},
         onClickCCTVinMenu=()=>{},
-        setFilterOpen=()=>{}
+        setFilterOpen=()=>{},
+        groupByArea=true
     } = props;
 
     const openFilterModal = React.useCallback(() => {
@@ -46,7 +50,7 @@ const LeftMenu = props => {
                     aria-label="delete" 
                     onClick={openFilterModal}
                 >
-                    <FilterListIcon fontSize="small" />
+                    <SettingsIcon fontSize="small" />
                 </BasicIconButton>
                 <SmallButton
                     style={{display:'block'}}
@@ -57,9 +61,9 @@ const LeftMenu = props => {
                     bgcolor={grey[700]}
                     hoverColor={grey[600]} 
                 >
-                    초기화
+                    Home
                 </SmallButton>
-                {areas.length > 0 && areas.map((area, index) => (
+                {groupByArea && areas.length > 0 && areas.map((area, index) => (
                     <SimpleSlide 
                         key={area}
                         transitionDelay={index*50}
@@ -82,21 +86,21 @@ const LeftMenu = props => {
                 ))}
             </TransparentPaper>
         </AbsolutePositionBox>
-        {areas.map((area, areaIndex) => (
+        {groupByArea && areas.map((area, areaIndex) => (
             <AbsolutePositionBox
-            key={area}
-            width="auto"
-            height="auto"
-            top={107+areaIndex*35}
-            left="100px"
-            // display={locationDisplay[areaIndex]}
+                key={area}
+                width="auto"
+                height="auto"
+                top={107+areaIndex*35}
+                left={"100px"}
+                // display={locationDisplay[areaIndex]}
             >
             <TransparentPaper>
-                {cctvsInAreas.get(area).length > 0 && cctvsInAreas.get(area).map((cctv,cctvIndex) => (
+                {groupByArea && cctvsInAreas.get(area).length > 0 && cctvsInAreas.get(area).map((cctv,cctvIndex) => (
                 <SimpleSlide
-                    key={cctv.id}
+                    key={cctv.cctvId}
                     transitionDelay={cctvIndex*50}
-                    show={locationDisplay[areaIndex]==='block'}
+                    show={!groupByArea ? true : locationDisplay[areaIndex]==='block'}
                     timeout={300}
                     mountOnEnter 
                     unmountOnExit
@@ -119,6 +123,41 @@ const LeftMenu = props => {
                 ))}
             </TransparentPaper>
             </AbsolutePositionBox>
+        ))}
+        {!groupByArea && [...cctvsInAreas.values()].flat().map((cctv,cctvIndex) => (
+            <AbsolutePositionBox
+                key={cctv}
+                width="auto"
+                height="auto"
+                top={107+cctvIndex*35}
+                // display={locationDisplay[areaIndex]}
+            >
+                <TransparentPaper>
+                    <SimpleSlide
+                        key={cctv.cctvId}
+                        transitionDelay={cctvIndex*50}
+                        show={true}
+                        timeout={300}
+                        mountOnEnter 
+                        unmountOnExit
+                    >
+                        <SmallButton
+                            key={cctv.cctvId}
+                            id={cctv.cctvId}
+                            style={{display:'block'}}
+                            fontsize="15px"
+                            mt="5px"
+                            width="auto"
+                            onClick={onClickCCTVinMenu}
+                            hoverColor={grey[600]}
+                            activeColor={grey[900]}
+                            bgcolor={cctv.cctvId === currentId ? grey[900]:grey[400]}
+                            >
+                            {cctv.title}  
+                        </SmallButton>
+                    </SimpleSlide>
+                </TransparentPaper>
+            </AbsolutePositionBox>    
         ))}
       </>
     )

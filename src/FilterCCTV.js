@@ -3,6 +3,9 @@ import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContentText from '@material-ui/core/DialogContentText';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 import styled from 'styled-components';
 import Column from './Column';
 import { DragDropContext } from 'react-beautiful-dnd';
@@ -18,6 +21,8 @@ const FilterCCTV = props => {
         columnData={},
         columnOrder=[],
         setColumnData=()=>{},
+        groupByArea=true,
+        setGroupByArea=()=>{}
         // cctvsInDropOn=[]
     } = props;
 
@@ -80,6 +85,10 @@ const FilterCCTV = props => {
 
     },[columnData])
 
+    const handleChange = React.useCallback(event => {
+        setGroupByArea(event.target.checked);
+    },[groupByArea])
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Dialog
@@ -92,7 +101,12 @@ const FilterCCTV = props => {
                 maxWidth="sm"
             >
                 <DialogTitle id="scroll-dialog-title">
-                    {optionTitle}
+                    <Box display="flex" flexDirection="row">
+                        {optionTitle}
+                        <Box style={{marginLeft:'auto'}}>
+                            <FormControlLabel control={<Checkbox color="primary" size="small" checked={groupByArea} onChange={handleChange} />} label="지역별로 묶기" />
+                        </Box>
+                    </Box>
                 </DialogTitle>
                 {/* <DialogContent dividers={scroll === 'paper'}> */}
                     <DialogContentText

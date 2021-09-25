@@ -7,6 +7,7 @@ import HLSPlayer from './HLSPlayer';
 import ModalBox from './ModalBox';
 import SmallPlayer from './SmallPlayer';
 import LeftMenu from './LeftMenu';
+import LeftSmallVideos from './LeftSmallVideos';
 import cctvsOriginal from './sources';
 import axios from 'axios';
 import cctvImage from './assets/CCTV_Camera.png';
@@ -25,8 +26,6 @@ const savedCCTVIds = db.get(LOCAL_STORAGE_KEY) || [];
 console.log(savedCCTVIds)
 const cctvIds = cctvs.map(cctv => cctv.cctvId)
 const cctvsInDragFrom = cctvIds.filter(cctvId => !(savedCCTVIds.includes(cctvId)) )
-
-
 
 const {
   INI_LAT,
@@ -124,10 +123,12 @@ function App() {
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
   const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
+  const [groupByArea, setGroupByArea] = React.useState(true);
 
 
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
+  const preLoadMapRef = React.useRef(new Map());
   // const cctvListRef = React.useRef([]);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
@@ -299,7 +300,15 @@ function App() {
               onClickArea={onClickArea}
               onClickCCTVinMenu={onClickCCTVinMenu}
               setFilterOpen={setFilterOpen}
+              groupByArea={groupByArea}
             ></LeftMenu>
+            <LeftSmallVideos
+              cctvsInAreas={cctvsInAreas}
+              groupByArea={groupByArea}
+              urls={urls}
+              preLoadMapRef={preLoadMapRef}
+            >
+            </LeftSmallVideos>
             <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
               <HLSPlayer 
                 fill={true}
@@ -318,6 +327,8 @@ function App() {
             columnOrder={columnOrder}
             // setColumnData={setColumnData}
             setColumnData={setColumnDataNSave}
+            groupByArea={groupByArea}
+            setGroupByArea={setGroupByArea}
           >
           </FilterCCTV>
         </header>
