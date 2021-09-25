@@ -10,7 +10,6 @@ import LeftMenu from './LeftMenu';
 import cctvsOriginal from './sources';
 import axios from 'axios';
 import cctvImage from './assets/CCTV_Camera.png';
-import colors from './lib/colors';
 import {setUniqAreasFromSources, orderByArea, groupCCTVsByArea} from './lib/sourceUtil';
 import {getPosition, makeMarkerImage, showMarker, showOverlay, movePositionNSetLevel} from './lib/mapUtil';
 import FilterCCTV from './FilterCCTV';

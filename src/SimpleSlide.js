@@ -1,6 +1,5 @@
 import React from 'react'
 import Slide from '@material-ui/core/Slide';
-import { Directions } from '@material-ui/icons';
 
 function SimpleSlide(props) {
     const {

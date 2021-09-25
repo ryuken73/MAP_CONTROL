@@ -2,25 +2,12 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import styled from 'styled-components';
 import Column from './Column';
 import { DragDropContext } from 'react-beautiful-dnd';
 import {moveTo, remove, add} from './lib/arrayUtil';
 
-const Container = styled.div`
-    height: 500px;
-    width: 40%;
-    border: 1px solid;
-    overflow: auto; 
-    border-radius: 3px;
-`
-
-// const getDropOnCCTVs = () => [];
-const getDragFromCCTVs = (cctvIds, cctvsIdDropOn) => {
-    return cctvIds.filter(cctvId => !(cctvsIdDropOn.includes(cctvId)) )
-};
 const scroll = 'paper';
 const FilterCCTV = props => {
     const {
@@ -34,32 +21,12 @@ const FilterCCTV = props => {
         // cctvsInDropOn=[]
     } = props;
 
-    // const cctvs = cctvListRef.current;
-    // const cctvIds = cctvs.map(cctv => cctv.cctvId)
-    // const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
-    // const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
-
-    // React.useEffect(() => {
-    //     // const cctvsInDropOn = getDropOnCCTVs();
-    //     const cctvsInDragFrom = getDragFromCCTVs(cctvIds, cctvsInDropOn);
-    //     setColumnData({
-    //         'dragFrom': {
-    //             ...columnData.dragFrom,
-    //             cctvIds: cctvsInDragFrom
-    //         },
-    //         'dropOn': {
-    //             ...columnData.dropOn,
-    //             cctvIds: cctvsInDropOn
-    //         }
-    //     })
-    // },[])
-
     const onCloseFilterDialog = () => {
         setFilterOpen(false);
     }
 
     const onDragEnd = React.useCallback(result => {
-        const {destination, source, draggableId} = result;
+        const {destination, source} = result;
         const MOVE_OUTSIDE = !destination;
         const NOT_MOVED = !MOVE_OUTSIDE && destination.droppableId === source.droppableId && destination.index === source.index;
         if(MOVE_OUTSIDE || NOT_MOVED) return;

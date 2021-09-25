@@ -58,6 +58,8 @@ const Column = props => {
 
         setColumnData(newData)
     },[column, columnData])
+    const itemColorDefault = column.id === 'dragFrom' ? 'skyblue':'darkblue'
+
     return (
         <Container>
             <Box
@@ -80,7 +82,12 @@ const Column = props => {
                         isDraggingOver={snapshot.isDraggingOver}
                     >
                         {columnItems.map((cctv, index) => (
-                            <DragItem key={cctv.cctvId} cctv={cctv} index={index} />
+                            <DragItem 
+                                key={cctv.cctvId} 
+                                cctv={cctv} 
+                                index={index} 
+                                colorDefault={itemColorDefault}
+                            />
                         ))}
                         {provided.placeholder}
                     </CCTVList>
