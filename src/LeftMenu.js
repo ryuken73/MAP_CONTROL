@@ -51,7 +51,7 @@ const LeftMenu = props => {
                     aria-label="delete" 
                     onClick={openFilterModal}
                 >
-                    <SettingsIcon fontSize="small" />
+                    <SettingsIcon fontSize="medium" />
                 </BasicIconButton>
                 <SmallButton
                     style={{display:'block'}}
@@ -59,8 +59,8 @@ const LeftMenu = props => {
                     mt="15px"
                     width="80px"
                     onClick={onClickInit}
-                    bgcolor={grey[700]}
-                    hoverColor={grey[600]} 
+                    bgcolor={"darkblue"}
+                    hoverColor={"skyblue"} 
                 >
                     Home
                 </SmallButton>
@@ -131,7 +131,7 @@ const LeftMenu = props => {
                 width="auto"
                 height="auto"
                 top={107+cctvIndex*35}
-                left={preload ? 80:0}
+                left={preload ? 75:0}
                 // display={locationDisplay[areaIndex]}
             >
                 <TransparentPaper>
