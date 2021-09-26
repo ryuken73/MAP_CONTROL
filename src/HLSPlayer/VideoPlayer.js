@@ -8,26 +8,27 @@ class VideoPlayer extends Component {
     playerId = `video-player-${Date.now() + (Math.random()*10000).toFixed(0)}`
     player = {};
     componentDidMount() {
-        console.log('player did mount:', this.playerId)
+        // console.log('player did mount:', this.playerId)
         this.init_player(this.props);
         this.init_player_events(this.props);
     }
 
     componentWillReceiveProps(nextProps){
         this.set_controls_visibility(this.player, nextProps.hideControls);
+        // console.log('&&&& in videoPlayer: ', this.props.src, nextProps.src)
         if(this.props.src !== nextProps.src){
             this.init_player(nextProps);
         }
     }
 
     componentWillUnmount() {
-        console.log('player will umount')
+        // console.log('player will umount:', this.playerId)
         if (this.player.isDisposed === false) this.player.dispose();
     }
 
     init_player(props) {
         try {
-            // console.log('####',props,this.playerId, this.player.isDisposed &&  this.player.isDisposed() , document.querySelector(`#${this.playerId}`))
+            // console.log('#### init_player: ',props,this.playerId, this.player.isDisposed &&  this.player.isDisposed() , document.querySelector(`#${this.playerId}`))
             const playerOptions = this.generate_player_options(props);
             const {
                 enableOverlay=false, 
@@ -37,6 +38,7 @@ class VideoPlayer extends Component {
                 startSecondsOffset=0,
             } = props;
             if(this.player.isDisposed == undefined || this.player.isDisposed &&  this.player.isDisposed()){
+                // console.log('initialize player:', this.playerId);
                 this.player = videojs(document.querySelector(`#${this.playerId}`), playerOptions);
             }
             // if(enableOverlay){
