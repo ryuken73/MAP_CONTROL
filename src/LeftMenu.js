@@ -126,7 +126,7 @@ const LeftMenu = props => {
         ))}
         {!groupByArea && [...cctvsInAreas.values()].flat().map((cctv,cctvIndex) => (
             <AbsolutePositionBox
-                key={cctv}
+                key={cctv.cctvId}
                 width="auto"
                 height="auto"
                 top={107+cctvIndex*35}
