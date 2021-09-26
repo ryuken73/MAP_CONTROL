@@ -87,7 +87,7 @@ const FilterCCTV = props => {
 
     const handleChange = React.useCallback(event => {
         setGroupByArea(event.target.checked);
-    },[groupByArea])
+    },[])
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>

@@ -130,6 +130,7 @@ const LeftMenu = props => {
                 width="auto"
                 height="auto"
                 top={107+cctvIndex*35}
+                left={80}
                 // display={locationDisplay[areaIndex]}
             >
                 <TransparentPaper>

@@ -103,6 +103,11 @@ const showCurrentLocation = (currentAreaIndex, setLocationDisplay) => {
   })
 }
 
+const clearVideoSrcObject = playerNode => {
+  const videoElement = playerNode.querySelector('video');
+  videoElement.srcObject = null;
+}
+
 function App() {
   const [map, setMap] = React.useState(null);
   const [location, setLocation] = React.useState(null);
@@ -192,10 +197,11 @@ function App() {
     console.log('### urls:', urls)
     const playerNode = playerRef.current;
     const currentOverlay = showOverlay(map, targetPosition, playerNode);
-
+    clearVideoSrcObject(playerNode);
     const cctvWithUrl = urls.find(url => url.cctvId === cctvId )
     // setPlayerSource({url: 'none'})
 
+    console.log('####', cctvWithUrl)
     cctvWithUrl && setTimeout(() => {
       setPlayerSource({url: cctvWithUrl.url});
       setPlayerDisplay('block');
@@ -204,16 +210,18 @@ function App() {
   }
 
   const mirrorSmallPlayerById = (map, targetPosition, playerRef, preloadElement) => {
+    console.log('mirror preload player!')
     const playerNode = playerRef.current;
     const currentOverlay = showOverlay(map, targetPosition, playerNode);
-    const preloadVideoElement = preloadElement.querySelector('video');
-    const targetVideoElement = playerNode.querySelector('video');
-    const preloadMediaStream = preloadVideoElement.captureStream();
-    targetVideoElement.srcObject = null;
-    targetVideoElement.srcObject = preloadMediaStream
-
-    setPlayerDisplay('block');
-    setCurrentOverlay(currentOverlay);
+    setTimeout(() => {
+      const preloadVideoElement = preloadElement.querySelector('video');
+      const targetVideoElement = playerNode.querySelector('video');
+      const preloadMediaStream = preloadVideoElement.captureStream();
+      // targetVideoElement.srcObject = null;
+      targetVideoElement.srcObject = preloadMediaStream
+      setPlayerDisplay('block');
+      setCurrentOverlay(currentOverlay);
+    },100)
   }
 
   const onClickCCTVinMenu = React.useCallback(event => {
@@ -230,7 +238,7 @@ function App() {
     showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef) :
     mirrorSmallPlayerById(map, targetPosition, playerRef, preloadElement)
 
-  },[map, urls])
+  },[map, urls, groupByArea])
 
   const maximizeVideo = React.useCallback(event => {
     const playerNode = playerRef.current;

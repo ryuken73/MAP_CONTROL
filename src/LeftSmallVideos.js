@@ -33,6 +33,7 @@ const LeftMenu = props => {
                 width="auto"
                 height="auto"
                 top={112+cctvIndex*35}
+                left={15}
             >
                 <TransparentPaper>
                     <SimpleSlide

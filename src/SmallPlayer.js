@@ -44,6 +44,7 @@ const SmallPlayer = props => {
                 fluid={false}
                 source={playerSource}
                 setPlayer={setPlayer}
+                controls={true}
             ></HLSPlayer>
         </>
     )
