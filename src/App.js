@@ -203,15 +203,33 @@ function App() {
     setCurrentOverlay(currentOverlay);
   }
 
+  const mirrorSmallPlayerById = (map, targetPosition, playerRef, preloadElement) => {
+    const playerNode = playerRef.current;
+    const currentOverlay = showOverlay(map, targetPosition, playerNode);
+    const preloadVideoElement = preloadElement.querySelector('video');
+    const targetVideoElement = playerNode.querySelector('video');
+    const preloadMediaStream = preloadVideoElement.captureStream();
+    targetVideoElement.srcObject = null;
+    targetVideoElement.srcObject = preloadMediaStream
+
+    setPlayerDisplay('block');
+    setCurrentOverlay(currentOverlay);
+  }
+
   const onClickCCTVinMenu = React.useCallback(event => {
     console.log('goLocation:', event, typeof(event))
     const cctvId = typeof(event) === 'number' ? event : event.target.id || event.target.parentElement.id;
     const cctvIdNum = parseInt(cctvId);
+    const preloadMap = preLoadMapRef.current;
+    const preloadElement = preloadMap.get(cctvId);
     setCurrentId(cctvIdNum);
     setPlayerDisplay('none');
     const targetPosition = movePositionNSetLevelById(cctvs, map, cctvIdNum)
     if(!SHOW_ON_MAP) return;
-    showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef);
+    groupByArea ? 
+    showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef) :
+    mirrorSmallPlayerById(map, targetPosition, playerRef, preloadElement)
+
   },[map, urls])
 
   const maximizeVideo = React.useCallback(event => {
@@ -302,13 +320,14 @@ function App() {
               setFilterOpen={setFilterOpen}
               groupByArea={groupByArea}
             ></LeftMenu>
+            {!groupByArea && (
             <LeftSmallVideos
               cctvsInAreas={cctvsInAreas}
-              groupByArea={groupByArea}
               urls={urls}
               preLoadMapRef={preLoadMapRef}
             >
             </LeftSmallVideos>
+            )}
             <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
               <HLSPlayer 
                 fill={true}

@@ -7,7 +7,6 @@ import Box from '@material-ui/core/Box';
 const LeftMenu = props => {
     const {
         cctvsInAreas=new Map(),
-        groupByArea=true,
         urls=[],
         preLoadMapRef=null
     } = props;
@@ -15,10 +14,13 @@ const LeftMenu = props => {
     const cctvs = [...cctvsInAreas.values()].flat();
 
     const addToPreloadMap = element => {
-        // const preloadMap = preLoadMapRef.current;
+        if(element === null) return;
+        const cctvId = element.id;
+        const preloadMap = preLoadMapRef.current;
+        preloadMap.set(cctvId, element);
         // preloadMap.set(element.id, element);
-        console.log('####',element)
-        console.log(element.id)
+        // console.log('####',element)
+        // console.log(element.id)
     }
 
     const setPlayer = () => {};
@@ -27,7 +29,7 @@ const LeftMenu = props => {
         <>
             {cctvs.map((cctv,cctvIndex) => (
             <AbsolutePositionBox
-                key={cctv}
+                key={cctv.cctvId}
                 width="auto"
                 height="auto"
                 top={112+cctvIndex*35}
