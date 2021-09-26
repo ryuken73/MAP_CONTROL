@@ -22,9 +22,10 @@ const FilterCCTV = props => {
         columnOrder=[],
         setColumnData=()=>{},
         groupByArea=true,
-        setGroupByArea=()=>{},
+        // setGroupByArea=()=>{},
         preload=false,
-        setPreload=()=>{}
+        setOptionsNSave=()=>{},
+        // setPreload=()=>{}
         // cctvsInDropOn=[]
     } = props;
 
@@ -89,12 +90,12 @@ const FilterCCTV = props => {
     },[columnData])
 
     const handleChange = React.useCallback(event => {
-        setGroupByArea(event.target.checked);
+        setOptionsNSave('groupByArea', event.target.checked);
     },[])
 
     const handleChangePreload = React.useCallback(event => {
         console.log(event.target.checked)
-        setPreload(event.target.checked)
+        setOptionsNSave('preload', event.target.checked)
     },[])
 
     return (

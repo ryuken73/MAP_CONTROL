@@ -22,10 +22,13 @@ const cctvs = orderByArea(cctvsOriginal);
 
 const db = storage.open('localStorage');
 const LOCAL_STORAGE_KEY = 'SBS_CCTVS_SELECTED';
+const SAVED_OPTIONS_KEY = 'SBS_CCTVS_OPTIONS';
 const savedCCTVIds = db.get(LOCAL_STORAGE_KEY) || [];
-console.log(savedCCTVIds)
+const savedOptions = db.get(SAVED_OPTIONS_KEY) || {};
 const cctvIds = cctvs.map(cctv => cctv.cctvId)
 const cctvsInDragFrom = cctvIds.filter(cctvId => !(savedCCTVIds.includes(cctvId)) )
+const INITIAL_PRELOAD = savedOptions.preload === undefined ? true : savedOptions.preload;
+const INITIAL_GROUP_BY_AREA = savedOptions.groupByArea === undefined ? false : savedOptions.groupByArea;
 
 const {
   INI_LAT,
@@ -128,8 +131,8 @@ function App() {
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
   const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
-  const [groupByArea, setGroupByArea] = React.useState(true);
-  const [preload, setPreload] = React.useState(true);
+  const [groupByArea, setGroupByArea] = React.useState(INITIAL_GROUP_BY_AREA);
+  const [preload, setPreload] = React.useState(INITIAL_PRELOAD);
 
 
   console.log('re-render:', cctvsInAreas)
@@ -286,6 +289,16 @@ function App() {
     setColumnData(columnData);
   },[])
 
+  const setOptionsNSave = React.useCallback((key, value) => {
+    key === 'preload' && setPreload(value);
+    key === 'groupByArea' && setGroupByArea(value);
+    const options = {
+      ...savedOptions,
+      [key]: value
+    }
+    db.set(SAVED_OPTIONS_KEY, options)    
+  },[])
+
   return (
     // <DragDropContext onDragEnd={onDragEnd}>
       <div className="App">
@@ -357,9 +370,10 @@ function App() {
             // setColumnData={setColumnData}
             setColumnData={setColumnDataNSave}
             groupByArea={groupByArea}
-            setGroupByArea={setGroupByArea}
+            // setGroupByArea={setGroupByArea}
             preload={preload}
-            setPreload={setPreload}
+            // setPreload={setPreload}
+            setOptionsNSave={setOptionsNSave}
           >
           </FilterCCTV>
         </header>
