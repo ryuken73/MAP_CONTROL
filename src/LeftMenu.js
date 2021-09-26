@@ -33,7 +33,8 @@ const LeftMenu = props => {
         onClickArea=()=>{},
         onClickCCTVinMenu=()=>{},
         setFilterOpen=()=>{},
-        groupByArea=true
+        groupByArea=true,
+        preload=false
     } = props;
 
     const openFilterModal = React.useCallback(() => {
@@ -130,7 +131,7 @@ const LeftMenu = props => {
                 width="auto"
                 height="auto"
                 top={107+cctvIndex*35}
-                left={80}
+                left={preload ? 80:0}
                 // display={locationDisplay[areaIndex]}
             >
                 <TransparentPaper>

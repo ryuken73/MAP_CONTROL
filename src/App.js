@@ -129,6 +129,7 @@ function App() {
   const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
   const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
   const [groupByArea, setGroupByArea] = React.useState(true);
+  const [preload, setPreload] = React.useState(true);
 
 
   console.log('re-render:', cctvsInAreas)
@@ -234,11 +235,11 @@ function App() {
     setPlayerDisplay('none');
     const targetPosition = movePositionNSetLevelById(cctvs, map, cctvIdNum)
     if(!SHOW_ON_MAP) return;
-    groupByArea ? 
-    showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef) :
-    mirrorSmallPlayerById(map, targetPosition, playerRef, preloadElement)
+    groupByArea && showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef) 
+    !groupByArea && !preload && showSmallPlayerById(map, cctvIdNum, urls, targetPosition, playerRef) 
+    !groupByArea && preload && mirrorSmallPlayerById(map, targetPosition, playerRef, preloadElement)
 
-  },[map, urls, groupByArea])
+  },[map, urls, groupByArea, preload])
 
   const maximizeVideo = React.useCallback(event => {
     const playerNode = playerRef.current;
@@ -327,14 +328,15 @@ function App() {
               onClickCCTVinMenu={onClickCCTVinMenu}
               setFilterOpen={setFilterOpen}
               groupByArea={groupByArea}
+              preload={preload}
             ></LeftMenu>
-            {!groupByArea && (
-            <LeftSmallVideos
-              cctvsInAreas={cctvsInAreas}
-              urls={urls}
-              preLoadMapRef={preLoadMapRef}
-            >
-            </LeftSmallVideos>
+            {!groupByArea && preload && (
+                <LeftSmallVideos
+                  cctvsInAreas={cctvsInAreas}
+                  urls={urls}
+                  preLoadMapRef={preLoadMapRef}
+                >
+                </LeftSmallVideos>
             )}
             <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
               <HLSPlayer 
@@ -356,6 +358,8 @@ function App() {
             setColumnData={setColumnDataNSave}
             groupByArea={groupByArea}
             setGroupByArea={setGroupByArea}
+            preload={preload}
+            setPreload={setPreload}
           >
           </FilterCCTV>
         </header>

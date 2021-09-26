@@ -45,6 +45,8 @@ const LeftMenu = props => {
                         unmountOnExit
                     >
                         <Box id={cctv.cctvId} ref={addToPreloadMap} minWidth="60px">
+                            <div style={{padding:"1px", borderColor:"black", border:"solid 1px black", background:'white'}}>
+                            
                             <HLSPlayer 
                                 width={350}
                                 height={200}
@@ -52,6 +54,7 @@ const LeftMenu = props => {
                                 source={urls.find(url => url.cctvId === cctv.cctvId )}
                                 setPlayer={setPlayer}
                             ></HLSPlayer>
+                            </div>
                         </Box>
                     </SimpleSlide>
                 </TransparentPaper>

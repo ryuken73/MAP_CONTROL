@@ -22,10 +22,13 @@ const FilterCCTV = props => {
         columnOrder=[],
         setColumnData=()=>{},
         groupByArea=true,
-        setGroupByArea=()=>{}
+        setGroupByArea=()=>{},
+        preload=false,
+        setPreload=()=>{}
         // cctvsInDropOn=[]
     } = props;
 
+    console.log('re-render filter :', preload)
     const onCloseFilterDialog = () => {
         setFilterOpen(false);
     }
@@ -89,6 +92,11 @@ const FilterCCTV = props => {
         setGroupByArea(event.target.checked);
     },[])
 
+    const handleChangePreload = React.useCallback(event => {
+        console.log(event.target.checked)
+        setPreload(event.target.checked)
+    },[])
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Dialog
@@ -104,6 +112,9 @@ const FilterCCTV = props => {
                     <Box display="flex" flexDirection="row">
                         {optionTitle}
                         <Box style={{marginLeft:'auto'}}>
+                            {!groupByArea && 
+                            <FormControlLabel control={<Checkbox color="primary" size="small" checked={preload} onChange={handleChangePreload} />} label="미리보기" />
+                            }
                             <FormControlLabel control={<Checkbox color="primary" size="small" checked={groupByArea} onChange={handleChange} />} label="지역별로 묶기" />
                         </Box>
                     </Box>
