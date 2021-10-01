@@ -29,6 +29,7 @@ const LeftMenu = props => {
         locationDisplay=[],
         currentId=null,
         cctvsInAreas=new Map(),
+        cctvsSelected=[],
         onClickInit=()=>{},
         onClickArea=()=>{},
         onClickCCTVinMenu=()=>{},
@@ -125,7 +126,7 @@ const LeftMenu = props => {
             </TransparentPaper>
             </AbsolutePositionBox>
         ))}
-        {!groupByArea && [...cctvsInAreas.values()].flat().map((cctv,cctvIndex) => (
+        {!groupByArea && cctvsSelected.map((cctv,cctvIndex) => (
             <AbsolutePositionBox
                 key={cctv.cctvId}
                 width="auto"
@@ -165,4 +166,4 @@ const LeftMenu = props => {
     )
 }
 
-export default LeftMenu;
+export default React.memo(LeftMenu);

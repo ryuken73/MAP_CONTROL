@@ -8,11 +8,13 @@ const LeftMenu = props => {
     const {
         cctvsInAreas=new Map(),
         urls=[],
-        preLoadMapRef=null
+        preLoadMapRef=null,
+        cctvsSelected=[]
     } = props;
 
-    const cctvs = [...cctvsInAreas.values()].flat();
+    // const cctvs = [...cctvsInAreas.values()].flat();
 
+    console.log('#', cctvsSelected)
     const addToPreloadMap = element => {
         if(element === null) return;
         const cctvId = element.id;
@@ -27,7 +29,7 @@ const LeftMenu = props => {
 
     return (
         <>
-            {cctvs.map((cctv,cctvIndex) => (
+            {cctvsSelected.map((cctv,cctvIndex) => (
             <AbsolutePositionBox
                 key={cctv.cctvId}
                 width="auto"
@@ -51,7 +53,7 @@ const LeftMenu = props => {
                                 width={350}
                                 height={200}
                                 fluid={false}
-                                source={urls.find(url => url.cctvId === cctv.cctvId )}
+                                source={cctv}
                                 setPlayer={setPlayer}
                             ></HLSPlayer>
                             </div>

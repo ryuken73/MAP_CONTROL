@@ -133,6 +133,7 @@ function App() {
   const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
   const [groupByArea, setGroupByArea] = React.useState(INITIAL_GROUP_BY_AREA);
   const [preload, setPreload] = React.useState(INITIAL_PRELOAD);
+  const [cctvsSelectedArray, setCCTVsSelectedAray] = React.useState([]);
 
 
   console.log('re-render:', cctvsInAreas)
@@ -165,11 +166,18 @@ function App() {
     const cctvIdsSelected = columnData['dropOn'].cctvIds;
     // const cctvsSelected = cctvs.filter(cctv => cctvIdsSelected.includes(cctv.cctvId));
     const cctvsSelected = cctvIdsSelected.map(cctvId => cctvs.find(cctv => cctv.cctvId === cctvId));
+    if(urls.length > 0){
+      const cctvsWithUrl = cctvsSelected.map(cctv => {
+        return urls.find(cctvWithUrl => cctvWithUrl.cctvId === cctv.cctvId)
+      })
+      console.log('###', cctvsWithUrl)
+      setCCTVsSelectedAray(cctvsWithUrl);
+  }
     const uniqAreas = setUniqAreasFromSources(cctvsSelected, setAreas);
     const locationDisplay = new Array(uniqAreas.length);
     setLocationDisplay(locationDisplay.fill('none'))
     groupCCTVsByArea(uniqAreas, cctvsSelected, setCCTVsInAreas);
-  },[columnData])
+  },[columnData, urls])
 
   React.useEffect(() => {
     if(map === null) return;
@@ -258,7 +266,7 @@ function App() {
   const cctvSlideOpen = currentArea => {
     const currentAreaIndex = areas.findIndex(area => area === currentArea);
     showCurrentLocation(currentAreaIndex, setLocationDisplay);
-    setCurrentArea(currentArea);
+    // setCurrentArea(currentArea);
   }
   
   const onClickInit = React.useCallback(() => {
@@ -267,7 +275,7 @@ function App() {
     setCurrentArea('');
     closeVideo();
     movePositionNSetLevel(map, INI_LAT, INI_LNG, INI_LEVEL)
-  },[map, currentOverlay])
+  },[map])
 
   const onClickArea = React.useCallback(event => {
     const currentArea = typeof(event) === 'string' ? event : event.target.innerText;
@@ -336,6 +344,7 @@ function App() {
               locationDisplay={locationDisplay}
               currentId={currentId}
               cctvsInAreas={cctvsInAreas}
+              cctvsSelected={cctvsSelectedArray}
               onClickInit={onClickInit}
               onClickArea={onClickArea}
               onClickCCTVinMenu={onClickCCTVinMenu}
@@ -345,8 +354,7 @@ function App() {
             ></LeftMenu>
             {!groupByArea && preload && (
                 <LeftSmallVideos
-                  cctvsInAreas={cctvsInAreas}
-                  urls={urls}
+                  cctvsSelected={cctvsSelectedArray}
                   preLoadMapRef={preLoadMapRef}
                 >
                 </LeftSmallVideos>
