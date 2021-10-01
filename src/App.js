@@ -134,11 +134,11 @@ function App() {
   const [groupByArea, setGroupByArea] = React.useState(INITIAL_GROUP_BY_AREA);
   const [preload, setPreload] = React.useState(INITIAL_PRELOAD);
   const [cctvsSelectedArray, setCCTVsSelectedAray] = React.useState([]);
-
-
+  
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
   const preLoadMapRef = React.useRef(new Map());
+  const setLeftSmallPlayerRef = React.useRef(()=>{});
   // const cctvListRef = React.useRef([]);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
@@ -356,6 +356,7 @@ function App() {
                 <LeftSmallVideos
                   cctvsSelected={cctvsSelectedArray}
                   preLoadMapRef={preLoadMapRef}
+                  setPlayer={setLeftSmallPlayerRef.current}
                 >
                 </LeftSmallVideos>
             )}

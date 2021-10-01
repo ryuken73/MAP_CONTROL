@@ -6,10 +6,9 @@ import Box from '@material-ui/core/Box';
 
 const LeftMenu = props => {
     const {
-        cctvsInAreas=new Map(),
-        urls=[],
         preLoadMapRef=null,
-        cctvsSelected=[]
+        cctvsSelected=[],
+        setPlayer
     } = props;
 
     // const cctvs = [...cctvsInAreas.values()].flat();
@@ -25,7 +24,7 @@ const LeftMenu = props => {
         // console.log(element.id)
     }
 
-    const setPlayer = () => {};
+    // const setPlayer = () => {};
 
     return (
         <>
