@@ -11,7 +11,8 @@ const useStyles = makeStyles((theme) => ({
     margin: 'auto',
     height: props.contentHeight || "80%",
     width: props.contentWidth || "90%",
-    backgroundColor: theme.palette.background.paper,
+    // backgroundColor: theme.palette.background.paper,
+    backgroundColor: props.autoPlay ? "maroon" : "white",
     border: '2px solid #000',
     boxShadow: theme.shadows[100],
     padding: theme.spacing(0.5),
@@ -22,7 +23,7 @@ function SimpleModal(props) {
   const classes = useStyles(props);
   const {children} = props;
   console.log('### modal:', props)
-  const {open, setOpen} = props;
+  const {open, setOpen, autoPlay} = props;
 
   const handleClose = () => {
     setOpen(false);
