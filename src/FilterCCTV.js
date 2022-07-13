@@ -22,6 +22,7 @@ const FilterCCTV = props => {
         columnOrder=[],
         setColumnData=()=>{},
         groupByArea=true,
+        displayGrid=false,
         // setGroupByArea=()=>{},
         preload=false,
         setOptionsNSave=()=>{},
@@ -98,6 +99,10 @@ const FilterCCTV = props => {
         setOptionsNSave('preload', event.target.checked)
     },[])
 
+    const handleChangeDisplayGrid = React.useCallback(event => {
+        setOptionsNSave('displayGrid', event.target.checked)
+    },[])
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Dialog
@@ -114,9 +119,19 @@ const FilterCCTV = props => {
                         {optionTitle}
                         <Box style={{marginLeft:'auto'}}>
                             {!groupByArea && 
-                            <FormControlLabel control={<Checkbox color="primary" size="small" checked={preload} onChange={handleChangePreload} />} label="미리보기" />
+                            <FormControlLabel 
+                                control={<Checkbox color="primary" size="small" checked={preload} onChange={handleChangePreload} />} 
+                                label="미리보기" 
+                            />
                             }
-                            <FormControlLabel control={<Checkbox color="primary" size="small" checked={groupByArea} onChange={handleChange} />} label="지역별로 묶기" />
+                            <FormControlLabel 
+                                control={<Checkbox color="primary" size="small" checked={groupByArea} onChange={handleChange} />} 
+                                label="지역별로 묶기" 
+                            />
+                            <FormControlLabel 
+                                control={<Checkbox color="primary" size="small" checked={displayGrid} onChange={handleChangeDisplayGrid} />} 
+                                label="4분할" 
+                            />
                         </Box>
                     </Box>
                 </DialogTitle>

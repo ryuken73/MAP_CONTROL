@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import { useHotkeys } from 'react-hotkeys-hook';
 import Box from '@material-ui/core/Box';
 import Loading from './Loading';
 import KakaoMap from './KakaoMap';
@@ -8,6 +9,7 @@ import ModalBox from './ModalBox';
 import SmallPlayer from './SmallPlayer';
 import LeftMenu from './LeftMenu';
 import LeftSmallVideos from './LeftSmallVideos';
+import GridVideos from './GridVideos';
 import cctvsOriginal from './sources';
 import axios from 'axios';
 import cctvImage from './assets/CCTV_Camera.png';
@@ -29,6 +31,7 @@ const cctvIds = cctvs.map(cctv => cctv.cctvId)
 const cctvsInDragFrom = cctvIds.filter(cctvId => !(savedCCTVIds.includes(cctvId)) )
 const INITIAL_PRELOAD = savedOptions.preload === undefined ? true : savedOptions.preload;
 const INITIAL_GROUP_BY_AREA = savedOptions.groupByArea === undefined ? false : savedOptions.groupByArea;
+const INITIAL_DISPLAY_GRID = savedOptions.displayGrid === undefined ? false : savedOptions.displayGrid;
 
 const {
   INI_LAT,
@@ -132,13 +135,17 @@ function App() {
   const [columnData, setColumnData] = React.useState(INITIAL_COLUMN_DATA);
   const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
   const [groupByArea, setGroupByArea] = React.useState(INITIAL_GROUP_BY_AREA);
+  const [displayGrid, setDisplayGrid] = React.useState(INITIAL_DISPLAY_GRID);
   const [preload, setPreload] = React.useState(INITIAL_PRELOAD);
+  const [autoPlay, setAutoPlay] = React.useState(false);
   const [cctvsSelectedArray, setCCTVsSelectedAray] = React.useState([]);
   
+  useHotkeys('c', () => setFilterOpen(true));
   console.log('re-render:', cctvsInAreas)
   const playerRef = React.useRef(null);
   const preLoadMapRef = React.useRef(new Map());
   const setLeftSmallPlayerRef = React.useRef(()=>{});
+  const autoPlayIndexRef = React.useRef(0);
   // const cctvListRef = React.useRef([]);
   const currentTitle = currentId ? cctvs.find(cctv => cctv.cctvId === currentId).title : 'none'
 
@@ -258,6 +265,39 @@ function App() {
     setModalOpen(true);
   },[playerRef, modalPlayer])
 
+  const maximizeGrid = React.useCallback(gridNum => {
+    console.log('maximizeGrid gridNum=', gridNum);
+    const cctvId = cctvsSelectedArray[gridNum].cctvId;
+    const preloadMap = preLoadMapRef.current;
+    const preloadElement = preloadMap.get(cctvId.toString());
+    console.log(cctvId, preloadMap, preloadElement)
+    mirrorModalPlayer(preloadElement, modalPlayer);
+    setModalOpen(true);
+  },[modalPlayer, preLoadMapRef.current, cctvsSelectedArray])
+
+  const toggleAutoPlay = React.useCallback(() => {
+    setAutoPlay(autoPlay => {
+      return !autoPlay;
+    })
+  },[setAutoPlay])
+
+  React.useEffect(() => {
+    let timer;
+    if(autoPlay){
+      const firstIndex = autoPlayIndexRef.current;
+      maximizeGrid(firstIndex);
+      autoPlayIndexRef.current = (firstIndex + 1) % 9;
+      timer = setInterval(() => {
+        const nextIndex = autoPlayIndexRef.current;
+        maximizeGrid(nextIndex);
+        autoPlayIndexRef.current = (nextIndex + 1) % 9;
+      },5000)
+    }
+    return () => {
+      if(timer) clearInterval(timer);
+    }
+  },[autoPlay, maximizeGrid])
+
   const closeVideo = event => {
     currentOverlay !== null && currentOverlay.setMap(null);
     setPlayerDisplay('none');
@@ -300,6 +340,7 @@ function App() {
   const setOptionsNSave = React.useCallback((key, value) => {
     key === 'preload' && setPreload(value);
     key === 'groupByArea' && setGroupByArea(value);
+    key === 'displayGrid' && setDisplayGrid(value);
     const options = {
       ...savedOptions,
       [key]: value
@@ -332,12 +373,15 @@ function App() {
             />
           </div>
           <Box width="100%" height="100%">
-            <KakaoMap
-              setMap={setMap}
-              setLocation={setLocation}
-              setLevel={setLevel}
-              maxLevel={MAX_MAP_LEVEL}
-            ></KakaoMap>
+            {!displayGrid && (
+              <KakaoMap
+                setMap={setMap}
+                setLocation={setLocation}
+                setLevel={setLevel}
+                maxLevel={MAX_MAP_LEVEL}
+              ></KakaoMap>
+            )}
+            {!displayGrid && (
             <LeftMenu
               areas={areas}
               currentArea={currentArea}
@@ -352,15 +396,26 @@ function App() {
               groupByArea={groupByArea}
               preload={preload}
             ></LeftMenu>
-            {!groupByArea && preload && (
-                <LeftSmallVideos
-                  cctvsSelected={cctvsSelectedArray}
-                  preLoadMapRef={preLoadMapRef}
-                  setPlayer={setLeftSmallPlayerRef.current}
-                >
-                </LeftSmallVideos>
             )}
-            <ModalBox open={modalOpen} keepMounted={true} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
+            {!groupByArea && preload && !displayGrid && (
+              <LeftSmallVideos
+                cctvsSelected={cctvsSelectedArray}
+                preLoadMapRef={preLoadMapRef}
+                setPlayer={setLeftSmallPlayerRef.current}
+              >
+              </LeftSmallVideos>
+            )}
+            {displayGrid && (
+              <GridVideos
+                cctvsSelected={cctvsSelectedArray}
+                preLoadMapRef={preLoadMapRef}
+                setPlayer={setLeftSmallPlayerRef.current}
+                maximizeGrid={maximizeGrid}
+                toggleAutoPlay={toggleAutoPlay}
+              >
+              </GridVideos>
+            )}
+            <ModalBox open={modalOpen} keepMounted={true} autoPlay={autoPlay} setOpen={setModalOpen} contentWidth="80%" contentHeight="auto">
               <HLSPlayer 
                 fill={true}
                 responsive={true}
@@ -379,6 +434,7 @@ function App() {
             // setColumnData={setColumnData}
             setColumnData={setColumnDataNSave}
             groupByArea={groupByArea}
+            displayGrid={displayGrid}
             // setGroupByArea={setGroupByArea}
             preload={preload}
             // setPreload={setPreload}
