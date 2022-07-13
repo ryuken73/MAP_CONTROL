@@ -26,6 +26,7 @@ const FilterCCTV = props => {
         groupByArea=true,
         displayGrid=false,
         gridDimension=2,
+        autoInterval=10,
         // setGroupByArea=()=>{},
         preload=false,
         setOptionsNSave=()=>{},
@@ -110,6 +111,10 @@ const FilterCCTV = props => {
         setOptionsNSave('gridDimension', event.target.value)
     },[])
 
+    const handleChangeAutoInterval = React.useCallback(event => {
+        setOptionsNSave('autoInterval', event.target.value)
+    },[])
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Dialog
@@ -153,6 +158,10 @@ const FilterCCTV = props => {
                                 <FormControlLabel value="2" control={<Radio size="small" />} label="2X2" />
                                 <FormControlLabel value="3" control={<Radio size="small"/>} label="3X3" />
                             </RadioGroup>
+                        }
+                        {displayGrid &&
+                            <input type="text" onChange={handleChangeAutoInterval} value={autoInterval}>
+                            </input>
                         }
                     </Box>
                 </DialogTitle>
