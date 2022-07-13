@@ -33,6 +33,7 @@ const INITIAL_PRELOAD = savedOptions.preload === undefined ? true : savedOptions
 const INITIAL_GROUP_BY_AREA = savedOptions.groupByArea === undefined ? false : savedOptions.groupByArea;
 const INITIAL_DISPLAY_GRID = savedOptions.displayGrid === undefined ? false : savedOptions.displayGrid;
 const INITIAL_GRID_DIMENSION = savedOptions.gridDimension === undefined ? 2 : savedOptions.gridDimension;
+const INITIAL_AUTO_INTERVAL = savedOptions.autoInterval === undefined ? 2 : savedOptions.autoInterval;
 
 const {
   INI_LAT,
@@ -140,6 +141,8 @@ function App() {
   const [gridDimension, setGridDimension] = React.useState(INITIAL_GRID_DIMENSION);
   const [preload, setPreload] = React.useState(INITIAL_PRELOAD);
   const [autoPlay, setAutoPlay] = React.useState(false);
+  const [autoInterval, setAutoInterval] = React.useState(INITIAL_AUTO_INTERVAL);
+  const [autoIntervalRemain, setAutoIntervalRemain] = React.useState(INITIAL_AUTO_INTERVAL);
   const [cctvsSelectedArray, setCCTVsSelectedAray] = React.useState([]);
   
   useHotkeys('c', () => setFilterOpen(true));
@@ -288,6 +291,7 @@ function App() {
   React.useEffect(() => {
     let timer;
     if(autoPlay){
+      document.title=`CCTV[auto - every ${autoInterval}s]`
       const firstIndex = autoPlayIndexRef.current;
       maximizeGrid(firstIndex);
       autoPlayIndexRef.current = (firstIndex + 1) % 9;
@@ -295,12 +299,32 @@ function App() {
         const nextIndex = autoPlayIndexRef.current;
         maximizeGrid(nextIndex);
         autoPlayIndexRef.current = (nextIndex + 1) % 9;
-      },5000)
+      },autoInterval*1000)
+    } else {
+      document.title="CCTV"
     }
     return () => {
       if(timer) clearInterval(timer);
     }
-  },[autoPlay, maximizeGrid])
+  },[autoPlay, maximizeGrid, autoInterval])
+
+  // React.useEffect(() => {
+  //   let timer;
+  //   if(autoPlay){
+  //     const firstRemain = autoInterval;
+  //     document.title = `CCTV[auto - ${firstRemain}/${autoInterval}s]`
+  //     timer = setInterval(() => {
+  //       setAutoIntervalRemain(remain => {
+  //         const nextRemain = remain - 1 < 0 ? autoInterval : remain - 1;
+  //         document.title = `CCTV[auto - ${nextRemain}/${autoInterval}s]`
+  //         return nextRemain;
+  //       })
+  //     },1000)
+  //   }
+  //   return () => {
+  //     if(timer) clearInterval(timer);
+  //   }
+  // },[autoInterval, autoPlay])
 
   const closeVideo = event => {
     currentOverlay !== null && currentOverlay.setMap(null);
@@ -346,6 +370,7 @@ function App() {
     key === 'groupByArea' && setGroupByArea(value);
     key === 'displayGrid' && setDisplayGrid(value);
     key === 'gridDimension' && setGridDimension(value);
+    key === 'autoInterval' && setAutoInterval(value);
     const options = {
       ...savedOptions,
       [key]: value
@@ -443,6 +468,7 @@ function App() {
             groupByArea={groupByArea}
             displayGrid={displayGrid}
             gridDimension={gridDimension}
+            autoInterval={autoInterval}
             // setGroupByArea={setGroupByArea}
             preload={preload}
             // setPreload={setPreload}
