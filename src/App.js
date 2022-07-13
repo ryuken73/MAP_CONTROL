@@ -32,6 +32,7 @@ const cctvsInDragFrom = cctvIds.filter(cctvId => !(savedCCTVIds.includes(cctvId)
 const INITIAL_PRELOAD = savedOptions.preload === undefined ? true : savedOptions.preload;
 const INITIAL_GROUP_BY_AREA = savedOptions.groupByArea === undefined ? false : savedOptions.groupByArea;
 const INITIAL_DISPLAY_GRID = savedOptions.displayGrid === undefined ? false : savedOptions.displayGrid;
+const INITIAL_GRID_DIMENSION = savedOptions.gridDimension === undefined ? 2 : savedOptions.gridDimension;
 
 const {
   INI_LAT,
@@ -136,6 +137,7 @@ function App() {
   const [columnOrder, setColumnOrder] = React.useState(INITIAL_COLUMN_ORDER);
   const [groupByArea, setGroupByArea] = React.useState(INITIAL_GROUP_BY_AREA);
   const [displayGrid, setDisplayGrid] = React.useState(INITIAL_DISPLAY_GRID);
+  const [gridDimension, setGridDimension] = React.useState(INITIAL_GRID_DIMENSION);
   const [preload, setPreload] = React.useState(INITIAL_PRELOAD);
   const [autoPlay, setAutoPlay] = React.useState(false);
   const [cctvsSelectedArray, setCCTVsSelectedAray] = React.useState([]);
@@ -266,14 +268,16 @@ function App() {
   },[playerRef, modalPlayer])
 
   const maximizeGrid = React.useCallback(gridNum => {
+    const totalGridNum = gridDimension * gridDimension;
+    const safeMaxIndex = Math.min(totalGridNum, cctvsSelectedArray.length);
     console.log('maximizeGrid gridNum=', gridNum);
-    const cctvId = cctvsSelectedArray[gridNum].cctvId;
+    const cctvId = cctvsSelectedArray[gridNum % safeMaxIndex].cctvId;
     const preloadMap = preLoadMapRef.current;
     const preloadElement = preloadMap.get(cctvId.toString());
     console.log(cctvId, preloadMap, preloadElement)
     mirrorModalPlayer(preloadElement, modalPlayer);
     setModalOpen(true);
-  },[modalPlayer, preLoadMapRef.current, cctvsSelectedArray])
+  },[modalPlayer, preLoadMapRef.current, gridDimension, cctvsSelectedArray])
 
   const toggleAutoPlay = React.useCallback(() => {
     setAutoPlay(autoPlay => {
@@ -341,6 +345,7 @@ function App() {
     key === 'preload' && setPreload(value);
     key === 'groupByArea' && setGroupByArea(value);
     key === 'displayGrid' && setDisplayGrid(value);
+    key === 'gridDimension' && setGridDimension(value);
     const options = {
       ...savedOptions,
       [key]: value
@@ -412,6 +417,8 @@ function App() {
                 setPlayer={setLeftSmallPlayerRef.current}
                 maximizeGrid={maximizeGrid}
                 toggleAutoPlay={toggleAutoPlay}
+                autoPlay={autoPlay}
+                gridDimension={gridDimension}
               >
               </GridVideos>
             )}
@@ -435,6 +442,7 @@ function App() {
             setColumnData={setColumnDataNSave}
             groupByArea={groupByArea}
             displayGrid={displayGrid}
+            gridDimension={gridDimension}
             // setGroupByArea={setGroupByArea}
             preload={preload}
             // setPreload={setPreload}

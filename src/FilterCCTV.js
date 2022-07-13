@@ -4,6 +4,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import FormGroup from '@material-ui/core/FormGroup';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import styled from 'styled-components';
@@ -23,6 +25,7 @@ const FilterCCTV = props => {
         setColumnData=()=>{},
         groupByArea=true,
         displayGrid=false,
+        gridDimension=2,
         // setGroupByArea=()=>{},
         preload=false,
         setOptionsNSave=()=>{},
@@ -103,6 +106,10 @@ const FilterCCTV = props => {
         setOptionsNSave('displayGrid', event.target.checked)
     },[])
 
+    const handleChangeGridDimension = React.useCallback(event => {
+        setOptionsNSave('gridDimension', event.target.value)
+    },[])
+
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Dialog
@@ -118,21 +125,35 @@ const FilterCCTV = props => {
                     <Box display="flex" flexDirection="row">
                         {optionTitle}
                         <Box style={{marginLeft:'auto'}}>
-                            {!groupByArea && 
+                            {!groupByArea && !displayGrid &&
                             <FormControlLabel 
                                 control={<Checkbox color="primary" size="small" checked={preload} onChange={handleChangePreload} />} 
                                 label="미리보기" 
                             />
                             }
+                            {!displayGrid &&
                             <FormControlLabel 
                                 control={<Checkbox color="primary" size="small" checked={groupByArea} onChange={handleChange} />} 
                                 label="지역별로 묶기" 
                             />
+                            }
                             <FormControlLabel 
                                 control={<Checkbox color="primary" size="small" checked={displayGrid} onChange={handleChangeDisplayGrid} />} 
-                                label="4분할" 
+                                label="분할화면" 
                             />
                         </Box>
+                        {displayGrid && 
+                            <RadioGroup
+                                aria-labelledby="demo-controlled-radio-buttons-group"
+                                name="controlled-radio-buttons-group"
+                                value={gridDimension}
+                                onChange={handleChangeGridDimension}
+                                row
+                            >
+                                <FormControlLabel value="2" control={<Radio size="small" />} label="2X2" />
+                                <FormControlLabel value="3" control={<Radio size="small"/>} label="3X3" />
+                            </RadioGroup>
+                        }
                     </Box>
                 </DialogTitle>
                 {/* <DialogContent dividers={scroll === 'paper'}> */}

@@ -9,9 +9,9 @@ import styled from 'styled-components';
 const Container = styled.div`
     /* height: 100%; */
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr ;
-    grid-template-rows: 1fr 1fr 1fr ;
-    /* align-items: stretch; */
+    grid-template-columns: ${props => `repeat(${props.dimension}, 1fr)`};
+    grid-template-rows: ${props => `repeat(${props.dimension}, 1fr)`};
+    align-items: stretch;
 `
 
 const GridVideos = props => {
@@ -20,7 +20,9 @@ const GridVideos = props => {
         cctvsSelected=[],
         setPlayer,
         maximizeGrid,
-        toggleAutoPlay
+        toggleAutoPlay,
+        autoPlay,
+        gridDimension
     } = props;
 
     // const cctvs = [...cctvsInAreas.values()].flat();
@@ -45,7 +47,7 @@ const GridVideos = props => {
     useHotkeys('a', () => toggleAutoPlay(), [toggleAutoPlay])
 
     return (
-        <Container>
+        <Container dimension={gridDimension}>
             {cctvsSelected.map((cctv,cctvIndex) => (
             // <AbsolutePositionBox
             //     key={cctv.cctvId}
@@ -64,8 +66,7 @@ const GridVideos = props => {
             //             unmountOnExit
             //         >
                         <Box key={cctv.cctvId} id={cctv.cctvId} ref={addToPreloadMap} minWidth="60px">
-                            <div style={{padding:"1px", borderColor:"black", border:"solid 1px black", background:'white'}}>
-                            
+                            <div style={{padding:"1px", borderColor:"black", border:"solid 1px black", background:`${autoPlay ? "maroon":"white"}`}}>
                             <HLSPlayer 
                                 width={350}
                                 height={200}
