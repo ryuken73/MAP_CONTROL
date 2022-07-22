@@ -73,6 +73,8 @@ const GridVideos = props => {
                                 fluid={false}
                                 source={cctv}
                                 setPlayer={setPlayer}
+                                enableOverlay={true}
+                                overlayContent={cctv.title}
                             ></HLSPlayer>
                             </div>
                         </Box>

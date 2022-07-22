@@ -144,6 +144,8 @@ function App() {
   const [autoInterval, setAutoInterval] = React.useState(INITIAL_AUTO_INTERVAL);
   const [autoIntervalRemain, setAutoIntervalRemain] = React.useState(INITIAL_AUTO_INTERVAL);
   const [cctvsSelectedArray, setCCTVsSelectedAray] = React.useState([]);
+  const [enableOverlayModal, setEnableOverlayModal] = React.useState(false);
+  const [overlayContentModal, setOverContentlayModal] = React.useState('');
   
   useHotkeys('c', () => setFilterOpen(true));
   console.log('re-render:', cctvsInAreas)
@@ -267,18 +269,23 @@ function App() {
   const maximizeVideo = React.useCallback(event => {
     const playerNode = playerRef.current;
     mirrorModalPlayer(playerNode, modalPlayer);
+    setEnableOverlayModal(true);
+    setOverContentlayModal(currentTitle)
     setModalOpen(true);
-  },[playerRef, modalPlayer])
+  },[playerRef, modalPlayer, currentTitle])
 
   const maximizeGrid = React.useCallback(gridNum => {
     const totalGridNum = gridDimension * gridDimension;
     const safeMaxIndex = Math.min(totalGridNum, cctvsSelectedArray.length);
     console.log('maximizeGrid gridNum=', gridNum);
-    const cctvId = cctvsSelectedArray[gridNum % safeMaxIndex].cctvId;
+    const cctv = cctvsSelectedArray[gridNum % safeMaxIndex];
+    const cctvId = cctv.cctvId;
     const preloadMap = preLoadMapRef.current;
     const preloadElement = preloadMap.get(cctvId.toString());
     console.log(cctvId, preloadMap, preloadElement)
     mirrorModalPlayer(preloadElement, modalPlayer);
+    setEnableOverlayModal(true);
+    setOverContentlayModal(cctv.title)
     setModalOpen(true);
   },[modalPlayer, preLoadMapRef.current, gridDimension, cctvsSelectedArray])
 
@@ -453,6 +460,8 @@ function App() {
                 responsive={true}
                 setPlayer={setModalPlayer}
                 aspectRatio={"16:9"}
+                enableOverlay={enableOverlayModal}
+                overlayContent={overlayContentModal}
               ></HLSPlayer>
             </ModalBox>
           </Box>

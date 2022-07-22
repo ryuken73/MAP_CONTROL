@@ -42,6 +42,22 @@ class VideoPlayer extends Component {
                 // console.log('initialize player:', this.playerId);
                 this.player = videojs(document.querySelector(`#${this.playerId}`), playerOptions);
             }
+            if(enableOverlay){
+                this.player.overlay(
+                    {
+                        overlays:[
+                            {
+                                content: overlayContent,
+                                start:'playing',
+                                end:'dispose',
+                                showBackground:true,
+                                class:'title-overlay'
+                            },
+                        ]
+                    }
+                )
+            }
+ 
             // if(enableOverlay){
             //     this.player.overlay(
             //         {

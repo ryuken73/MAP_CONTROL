@@ -7,7 +7,7 @@ const HLSPlayer = (props) => {
     const {
         player=null, 
         enableAutoRefresh=null, 
-        enableOverlay=true,
+        enableOverlay=false,
         overlayContent='Default Overlay Content',
         overlayRightBtn='Default Right Button',
         overlayLeftBtn='Default left Button',
